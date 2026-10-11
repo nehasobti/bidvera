@@ -13,7 +13,7 @@ class Settings(BaseModel):
     app_name: str = "Bidvera Agent Service"
     environment: str = Field(default_factory=lambda: os.getenv("ENV", "development"))
     host: str = Field(default_factory=lambda: os.getenv("HOST", "0.0.0.0"))
-    port: int = Field(default_factory=lambda: int(os.getenv("PORT", "8000")))
+    port: int = Field(default_factory=lambda: int(os.getenv("PORT", "8005")))
 
     # MCP Security Token
     mcp_auth_token: str = Field(default_factory=lambda: os.getenv("MCP_AUTH_TOKEN", "bidvera-dev-token"))

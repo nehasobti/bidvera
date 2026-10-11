@@ -31,6 +31,7 @@ class ResumeBidRequest(BaseModel):
 
 
 @router.post("", status_code=201)
+@router.post("/", status_code=201)
 async def start_bid(req: StartBidRequest) -> dict[str, Any]:
     """Start a new bid workflow thread."""
     bid_id = req.bid_id or f"bid-{uuid.uuid4().hex[:8]}"
