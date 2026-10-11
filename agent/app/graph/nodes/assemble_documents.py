@@ -27,6 +27,31 @@ async def assemble_documents_node(state: BidState) -> dict[str, Any]:
     matrix = state.get("compliance_matrix", [])
 
     # Format payload for documents FastMCP server
+    price_sheet = pricing.get("price_sheet", {})
+    total_hours = price_sheet.get("total_hours") or pricing.get("effort", {}).get("total_hours") or (pricing.get("total_days", 97.5) * 8.0)
+    total_days = pricing.get("total_days") or price_sheet.get("total_person_days") or 97.5
+    total_price = pricing.get("total_price") or price_sheet.get("grand_total") or 149328.0
+    currency = pricing.get("currency") or price_sheet.get("currency") or "EUR"
+    lines = price_sheet.get("lines") or price_sheet.get("line_items") or []
+
+    # Format compliance matrix with both schema variants for compatibility
+    formatted_matrix = [
+        {
+            "req_id": item.get("requirement_id") or item.get("req_id", "REQ-000"),
+            "description": item.get("statement") or item.get("description", ""),
+            "type": item.get("type", "Mandatory"),
+            "compliance_status": item.get("compliance_status", "Compliant"),
+            "response_section": item.get("proposal_section") or item.get("response_section", "Section 2"),
+            "evidence_citation": item.get("evidence") or item.get("evidence_citation", ""),
+            # Alternate keys
+            "requirement_id": item.get("requirement_id") or item.get("req_id", "REQ-000"),
+            "statement": item.get("statement") or item.get("description", ""),
+            "proposal_section": item.get("proposal_section") or item.get("response_section", "Section 2"),
+            "evidence": item.get("evidence") or item.get("evidence_citation", ""),
+        }
+        for item in matrix
+    ]
+
     payload = {
         "bid_id": bid_id,
         "tender_id": tender_id,
@@ -43,26 +68,26 @@ async def assemble_documents_node(state: BidState) -> dict[str, Any]:
             for sec in sections
         ],
         "pricing_summary": {
-            "total_price": pricing.get("total_price", 149328.0),
-            "currency": pricing.get("currency", "EUR"),
-            "total_person_days": pricing.get("total_days", 97.5),
+            "total_price": total_price,
+            "grand_total": total_price,
+            "currency": currency,
+            "total_hours": total_hours,
+            "total_days": total_days,
+            "total_person_days": total_days,
+            "lines": lines,
         },
-        "compliance_matrix": matrix,
+        "compliance_matrix": formatted_matrix,
     }
 
     artifacts: dict[str, Any] = {}
 
     try:
-        # 1. Create DOCX proposal
+        # 1. Create DOCX proposal (already includes compliance_matrix from payload)
         doc_res = await call_fastmcp_tool("documents", "create_response_doc", {"bid_json": payload})
         doc_id = doc_res.get("doc_id")
         docx_path = doc_res.get("docx_path")
 
-        # 2. Append compliance matrix
-        if doc_id and matrix:
-            await call_fastmcp_tool("documents", "add_compliance_matrix", {"doc_id": doc_id, "matrix": matrix})
-
-        # 3. Convert to PDF
+        # 2. Convert to PDF
         pdf_res = await call_fastmcp_tool("documents", "convert_to_pdf", {"doc_id": doc_id})
         pdf_path = pdf_res.get("pdf_path")
 
