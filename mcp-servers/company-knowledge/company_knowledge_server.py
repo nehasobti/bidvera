@@ -188,7 +188,6 @@ def create_asgi_app() -> Any:
     app = mcp.sse_app()
     app.add_middleware(BearerAuthMiddleware)
 
-    @app.route("/health", methods=["GET"])
     async def health_endpoint(_: Request) -> JSONResponse:
         return JSONResponse(
             {
@@ -201,6 +200,7 @@ def create_asgi_app() -> Any:
             }
         )
 
+    app.add_route("/health", health_endpoint, methods=["GET"])
     return app
 
 

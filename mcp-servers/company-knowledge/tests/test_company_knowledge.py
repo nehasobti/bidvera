@@ -55,14 +55,14 @@ def test_find_case_studies_industry():
 def test_get_cv_role():
     cvs = get_cv(role="Cloud Architect")
     assert len(cvs) >= 1
-    assert "Markus Weber" in cvs[0]["name"]
+    assert "Anshuman Verma" in cvs[0]["name"]
 
 
 def test_get_cv_skills():
     cvs = get_cv(skills=["Terraform"])
     assert len(cvs) >= 1
     names = [c["name"] for c in cvs]
-    assert any("Priya Sharma" in n or "Markus Weber" in n for n in names)
+    assert any("Priya Sharma" in n or "Anshuman Verma" in n for n in names)
 
 
 def test_search_knowledge_hybrid():
