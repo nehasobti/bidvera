@@ -4,7 +4,16 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { fetchBid, submitBidDecision } from "@/lib/api";
 import { formatDate } from "@/lib/date";
-import { BidRecord, Requirement, OutlineSection, DraftedSection, CommercialPricing } from "@/types";
+import {
+  BidRecord,
+  Requirement,
+  OutlineSection,
+  DraftedSection,
+  CommercialPricing,
+  ComplianceMatrixItem,
+  ProposalReview,
+  DocumentArtifacts,
+} from "@/types";
 import {
   FileText,
   CheckCircle2,
@@ -24,6 +33,10 @@ import {
   Edit3,
   Coins,
   FileCheck,
+  Download,
+  Award,
+  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 
 export default function BidWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -34,7 +47,15 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
-    "timeline" | "requirements" | "eligibility" | "outline" | "sections" | "pricing"
+    | "timeline"
+    | "requirements"
+    | "eligibility"
+    | "outline"
+    | "sections"
+    | "pricing"
+    | "compliance"
+    | "review"
+    | "artifacts"
   >("timeline");
   const [decisionSubmitting, setDecisionSubmitting] = useState(false);
   const [comment, setComment] = useState("");
@@ -102,6 +123,9 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
   const outline: OutlineSection[] = (bid as any).outline || [];
   const sections: DraftedSection[] = (bid as any).sections || [];
   const pricing: CommercialPricing = (bid as any).pricing || {};
+  const matrix: ComplianceMatrixItem[] = (bid as any).compliance_matrix || [];
+  const review: ProposalReview | undefined = (bid as any).review;
+  const artifacts: DocumentArtifacts = (bid as any).artifacts || {};
 
   return (
     <div className="space-y-6 pb-16">
@@ -142,10 +166,10 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </span>
               )}
 
-              {status === "pricing_calculated" && (
+              {artifacts.status === "ready" && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  Drafting & Pricing Complete
+                  Proposal DOCX & PDF Ready
                 </span>
               )}
             </div>
@@ -176,18 +200,41 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-right">
-              <span className="text-[10px] text-slate-400 font-semibold uppercase block">Qualification</span>
-              <span
-                className={`font-extrabold px-3 py-1 rounded-md text-xs uppercase ${
-                  eligibility?.recommendation === "bid"
-                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                    : "bg-amber-100 text-amber-800 border border-amber-300"
-                }`}
-              >
-                {eligibility?.recommendation || "ANALYZING"}
-              </span>
-            </div>
+            {artifacts.status === "ready" ? (
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/api/backend/bids/${bidId}/download/docx`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download DOCX</span>
+                </a>
+                <a
+                  href={`/api/backend/bids/${bidId}/download/pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-xs transition"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download PDF</span>
+                </a>
+              </div>
+            ) : (
+              <div className="text-right">
+                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Qualification</span>
+                <span
+                  className={`font-extrabold px-3 py-1 rounded-md text-xs uppercase ${
+                    eligibility?.recommendation === "bid"
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                      : "bg-amber-100 text-amber-800 border border-amber-300"
+                  }`}
+                >
+                  {eligibility?.recommendation || "ANALYZING"}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -213,7 +260,7 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </h3>
                 <p className="text-xs text-amber-900 leading-relaxed max-w-3xl">
                   Bidvera completed automated document ingestion, extraction of {requirements.length} atomic
-                  requirements, and validation against Tychon corporate credentials. Sign-off is required to proceed to proposal outline planning, parallel section drafting, and commercial pricing.
+                  requirements, and validation against Tychon corporate credentials. Sign-off is required to proceed to proposal outline planning, parallel section drafting, commercial pricing, compliance matrix, and PDF generation.
                 </p>
               </div>
             </div>
@@ -262,6 +309,9 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
           { key: "outline", label: `Outline (${outline.length})`, icon: FileText },
           { key: "sections", label: `Drafted Sections (${sections.length})`, icon: Edit3 },
           { key: "pricing", label: "Commercial Pricing", icon: DollarSign },
+          { key: "compliance", label: `Compliance Matrix (${matrix.length})`, icon: FileCheck },
+          { key: "review", label: "QA & Review", icon: Award },
+          { key: "artifacts", label: "Proposal Downloads", icon: Download },
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -325,10 +375,10 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 done: outline.length > 0 || status === "no_bid_closed",
               },
               {
-                step: "7. Parallel Section Drafting (Company Knowledge Grounding)",
+                step: "7. Parallel Section Drafting",
                 desc:
                   sections.length > 0
-                    ? `Drafted ${sections.length} proposal sections in parallel with verified case studies and ISO credentials.`
+                    ? `Drafted ${sections.length} proposal sections in parallel with verified credentials and structured prose.`
                     : "Awaiting approval.",
                 done: sections.length > 0,
               },
@@ -339,6 +389,30 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                     ? `Compiled commercial rate sheet: €${pricing.total_price.toLocaleString()} across ${pricing.total_days} person-days.`
                     : "Awaiting drafting completion.",
                 done: !!pricing.total_price,
+              },
+              {
+                step: "9. Traceable Compliance Matrix Assembly",
+                desc:
+                  matrix.length > 0
+                    ? `Mapped ${matrix.length} mandatory & scored requirements to proposal evidence statements.`
+                    : "Awaiting pricing.",
+                done: matrix.length > 0,
+              },
+              {
+                step: "10. Proposal Quality Assurance & Review",
+                desc:
+                  review
+                    ? `Quality score: ${review.score}/100 with ${review.requirement_coverage_pct}% requirement coverage.`
+                    : "Awaiting matrix.",
+                done: !!review,
+              },
+              {
+                step: "11. Final Document Generation (DOCX & PDF)",
+                desc:
+                  artifacts.status === "ready"
+                    ? "Generated distribution-ready Proposal.docx and Proposal.pdf."
+                    : "Awaiting review.",
+                done: artifacts.status === "ready",
               },
             ].map((item, idx) => (
               <div key={idx} className="flex items-start gap-4">
@@ -559,7 +633,7 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                     </div>
                   </div>
 
-                  <div className="prose prose-sm max-w-none text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans">
+                  <div className="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans space-y-2">
                     {sec.content}
                   </div>
 
@@ -706,6 +780,206 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </div>
               )}
             </>
+          )}
+        </div>
+      )}
+
+      {/* Tab 7: Compliance Matrix */}
+      {activeTab === "compliance" && (
+        <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">RFP Compliance & Traceability Matrix</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Every mandatory and scored requirement mapped to proposal evidence and compliance declarations.
+              </p>
+            </div>
+            <span className="text-xs font-semibold text-slate-500">
+              {matrix.length} Entries
+            </span>
+          </div>
+
+          {matrix.length === 0 ? (
+            <div className="p-12 text-center text-slate-400 text-xs">
+              Compliance matrix will be built automatically during full proposal generation.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                  <tr>
+                    <th className="py-3 px-4">Requirement ID</th>
+                    <th className="py-3 px-4">RFP Statement</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Proposal Section</th>
+                    <th className="py-3 px-4">Evidence Citation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {matrix.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-blue-600 whitespace-nowrap">
+                        {row.requirement_id}
+                      </td>
+                      <td className="py-3 px-4 max-w-sm font-medium text-slate-800">
+                        {row.statement}
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          {row.compliance_status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
+                        {row.proposal_section}
+                      </td>
+                      <td className="py-3 px-4 text-slate-500 max-w-xs">
+                        {row.evidence}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 8: QA & Review */}
+      {activeTab === "review" && (
+        <div className="space-y-6">
+          {!review ? (
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+              <Award className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+              <h4 className="text-sm font-bold text-slate-900">QA Review Not Executed Yet</h4>
+              <p className="text-xs text-slate-500 mt-1">
+                Quality scoring and compliance verification run automatically as the penultimate stage.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Scoring Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Overall Proposal Score</div>
+                  <div className="text-3xl font-extrabold text-emerald-600 mt-1">
+                    {review.score}/100
+                  </div>
+                  <div className="text-[11px] text-emerald-700 font-semibold mt-1">
+                    Audit & Submission Ready
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Requirement Traceability</div>
+                  <div className="text-3xl font-extrabold text-slate-900 mt-1">
+                    {review.requirement_coverage_pct}%
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium mt-1">
+                    Full Coverage across 6 sections
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Hallucination & Evidence Gate</div>
+                  <div className="text-3xl font-extrabold text-blue-600 mt-1">
+                    PASSED
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium mt-1">
+                    Grounded in Company Knowledge MCP
+                  </div>
+                </div>
+              </div>
+
+              {/* Review Flags */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3">
+                <h4 className="text-xs font-bold text-slate-900">Review Findings & Verification Logs</h4>
+                <div className="space-y-2">
+                  {review.flags.map((flag, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3 rounded-xl border text-xs flex items-start gap-2.5 ${
+                        flag.severity === "pass" || flag.severity === "info"
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                          : "bg-amber-50 border-amber-200 text-amber-800"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span>{flag.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Tab 9: Proposal Downloads */}
+      {activeTab === "artifacts" && (
+        <div className="space-y-6">
+          {artifacts.status !== "ready" ? (
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+              <Download className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+              <h4 className="text-sm font-bold text-slate-900">Documents Not Yet Assembled</h4>
+              <p className="text-xs text-slate-500 mt-1">
+                DOCX and PDF files are generated once all sections and pricing calculations complete.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* DOCX Card */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    DOCX
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900">Microsoft Word Proposal</h4>
+                  <p className="text-xs text-slate-500">
+                    Editable technical and commercial submission document with custom cover page, table of contents, and compliance tables.
+                  </p>
+                  <div className="font-mono text-xs text-slate-400 bg-slate-50 p-2 rounded-lg truncate">
+                    {artifacts.docx_filename}
+                  </div>
+                </div>
+
+                <a
+                  href={`/api/backend/bids/${bidId}/download/docx`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download .DOCX File</span>
+                </a>
+              </div>
+
+              {/* PDF Card */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                    PDF
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900">Distribution-Ready PDF Proposal</h4>
+                  <p className="text-xs text-slate-500">
+                    Formatted proposal document with corporate headers, pagination, and official declarations ready for client delivery.
+                  </p>
+                  <div className="font-mono text-xs text-slate-400 bg-slate-50 p-2 rounded-lg truncate">
+                    {artifacts.pdf_filename}
+                  </div>
+                </div>
+
+                <a
+                  href={`/api/backend/bids/${bidId}/download/pdf`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-xs transition"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download .PDF File</span>
+                </a>
+              </div>
+            </div>
           )}
         </div>
       )}

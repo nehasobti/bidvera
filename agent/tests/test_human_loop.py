@@ -51,7 +51,7 @@ async def test_bid_decision_interrupt_and_bid_path():
     resume_cmd = Command(resume={"decision": "bid", "comment": "Strategic fit for cloud team", "who": "manager"})
     final_result = await graph.ainvoke(resume_cmd, config=config)
 
-    assert final_result["status"] in ("outline_planned", "pricing_calculated")
+    assert final_result["status"] in ("outline_planned", "pricing_calculated", "proposal_assembled")
     assert len(final_result["outline"]) == 6
     assert len(final_result["decisions"]) == 1
     assert final_result["decisions"][0]["decision"] == "bid"

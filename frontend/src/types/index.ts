@@ -103,6 +103,42 @@ export interface CommercialPricing {
   total_days: number;
 }
 
+export interface ComplianceMatrixItem {
+  requirement_id: string;
+  statement: string;
+  type: string;
+  weight: string;
+  compliance_status: string;
+  proposal_section: string;
+  evidence: string;
+}
+
+export interface ReviewFlag {
+  severity: "pass" | "warn" | "info" | "fail";
+  message: string;
+}
+
+export interface ProposalReview {
+  score: number;
+  status: string;
+  requirement_coverage_pct: number;
+  sections_reviewed: number;
+  flags: ReviewFlag[];
+  hallucination_check: string;
+  grounding_check: string;
+}
+
+export interface DocumentArtifacts {
+  doc_id?: string;
+  docx_path?: string;
+  pdf_path?: string;
+  docx_filename?: string;
+  pdf_filename?: string;
+  docx_size_bytes?: number;
+  pdf_size_bytes?: number;
+  status?: string;
+}
+
 export interface BidDecision {
   decision: "bid" | "no-bid";
   comment?: string;
@@ -136,6 +172,9 @@ export interface BidRecord {
   outline?: OutlineSection[];
   sections?: DraftedSection[];
   pricing?: CommercialPricing;
+  compliance_matrix?: ComplianceMatrixItem[];
+  review?: ProposalReview;
+  artifacts?: DocumentArtifacts;
   decisions?: BidDecision[];
   is_waiting_for_approval?: boolean;
   pending_checkpoint?: any;

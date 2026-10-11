@@ -6,7 +6,9 @@ from typing import Any
 from langgraph.graph import END, START, StateGraph
 
 from agent.app.core.db import get_checkpointer
+from agent.app.graph.nodes.assemble_documents import assemble_documents_node
 from agent.app.graph.nodes.bid_decision import bid_decision_node
+from agent.app.graph.nodes.build_compliance_matrix import build_compliance_matrix_node
 from agent.app.graph.nodes.calculate_pricing import calculate_pricing_node
 from agent.app.graph.nodes.check_eligibility import check_eligibility_node
 from agent.app.graph.nodes.draft_sections import (
@@ -23,6 +25,7 @@ from agent.app.graph.nodes.ingest import ingest_node
 from agent.app.graph.nodes.no_bid_summary import no_bid_summary_node
 from agent.app.graph.nodes.parse import parse_documents_node
 from agent.app.graph.nodes.plan_outline import plan_outline_node
+from agent.app.graph.nodes.review_proposal import review_proposal_node
 from agent.app.graph.state import BidState
 
 
@@ -30,7 +33,7 @@ def create_bid_graph(checkpointer: Any = None) -> Any:
     """Builds and compiles the core Bidvera StateGraph workflow."""
     builder = StateGraph(BidState)
 
-    # 1. Register Phase 1, 2, 3, 4 Nodes
+    # 1. Register All Phase 1 - 5 Nodes
     builder.add_node("ingest", ingest_node)
     builder.add_node("parse_documents", parse_documents_node)
     builder.add_node("extract_section_requirements", extract_section_requirements)
@@ -39,11 +42,12 @@ def create_bid_graph(checkpointer: Any = None) -> Any:
     builder.add_node("bid_decision", bid_decision_node)
     builder.add_node("plan_outline", plan_outline_node)
     builder.add_node("no_bid_summary", no_bid_summary_node)
-
-    # Phase 4 Nodes: Section drafting and commercial pricing
     builder.add_node("draft_section", draft_section_node)
     builder.add_node("finalize_drafting", finalize_drafting_node)
     builder.add_node("calculate_pricing", calculate_pricing_node)
+    builder.add_node("build_compliance_matrix", build_compliance_matrix_node)
+    builder.add_node("review_proposal", review_proposal_node)
+    builder.add_node("assemble_documents", assemble_documents_node)
 
     # 2. Sequential & Parallel Edges
     builder.add_edge(START, "ingest")
@@ -66,7 +70,6 @@ def create_bid_graph(checkpointer: Any = None) -> Any:
     builder.add_edge("check_eligibility", "bid_decision")
 
     # If decision is 'bid', outline is planned
-    # plan_outline fans out to parallel draft_section nodes
     builder.add_conditional_edges(
         "plan_outline",
         fanout_sections_for_drafting,
@@ -79,8 +82,17 @@ def create_bid_graph(checkpointer: Any = None) -> Any:
     # Drafted sections flow to commercial pricing calculation
     builder.add_edge("finalize_drafting", "calculate_pricing")
 
+    # Pricing flows to Compliance Matrix generation
+    builder.add_edge("calculate_pricing", "build_compliance_matrix")
+
+    # Compliance Matrix flows to Review & QA scoring
+    builder.add_edge("build_compliance_matrix", "review_proposal")
+
+    # Review flows to Document Assembly (DOCX, PDF generation)
+    builder.add_edge("review_proposal", "assemble_documents")
+
     # End paths
-    builder.add_edge("calculate_pricing", END)
+    builder.add_edge("assemble_documents", END)
     builder.add_edge("no_bid_summary", END)
 
     # Compile with checkpointer

@@ -169,6 +169,9 @@ async def get_bid_status(bid_id: str) -> dict[str, Any]:
         "outline": values.get("outline", []),
         "sections": values.get("sections", []),
         "pricing": values.get("pricing", {}),
+        "compliance_matrix": values.get("compliance_matrix", []),
+        "review": values.get("review", {}),
+        "artifacts": values.get("artifacts", {}),
         "decisions": values.get("decisions", []),
         "is_waiting_for_approval": is_waiting,
         "pending_checkpoint": interrupt_payload,
@@ -277,3 +280,42 @@ async def stream_bid_progress(bid_id: str) -> EventSourceResponse:
         }
 
     return EventSourceResponse(event_generator())
+
+
+@router.get("/{bid_id}/download/{file_format}")
+async def download_proposal_artifact(bid_id: str, file_format: str):
+    """Download generated proposal DOCX or PDF artifact."""
+    from fastapi.responses import FileResponse
+    from pathlib import Path
+
+    config = {"configurable": {"thread_id": bid_id}}
+    state_snapshot = bid_graph.get_state(config)
+    if not state_snapshot or not state_snapshot.values:
+        raise HTTPException(status_code=404, detail=f"Bid thread '{bid_id}' not found.")
+
+    artifacts = state_snapshot.values.get("artifacts", {})
+    fmt = file_format.lower().strip()
+
+    if fmt == "docx":
+        file_path_str = artifacts.get("docx_path")
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif fmt == "pdf":
+        file_path_str = artifacts.get("pdf_path")
+        media_type = "application/pdf"
+    else:
+        raise HTTPException(status_code=400, detail="Invalid format. Supported: 'docx', 'pdf'.")
+
+    if not file_path_str or not Path(file_path_str).exists():
+        # Fallback check standard output directory
+        alt_path = Path("output/documents") / f"Proposal_{bid_id}_{state_snapshot.values.get('bid', {}).get('tender_id', 'tender')}.{fmt}"
+        if alt_path.exists():
+            file_path_str = str(alt_path)
+        else:
+            raise HTTPException(status_code=404, detail=f"Artifact for format '{fmt}' not yet generated.")
+
+    return FileResponse(
+        path=file_path_str,
+        media_type=media_type,
+        filename=Path(file_path_str).name,
+    )
+
