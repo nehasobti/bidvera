@@ -1,0 +1,110 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: bidvera-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bidvera
+      POSTGRES_USER: bidvera
+      POSTGRES_PASSWORD: bidverasecret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bidvera -d bidvera"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mcp-tender-search:
+    build:
+      context: .
+      dockerfile: mcp-servers/tender-search/Dockerfile
+    container_name: bidvera-mcp-tender-search
+    restart: unless-stopped
+    environment:
+      PORT: 8001
+      MCP_HOST: 0.0.0.0
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:-bidvera-dev-token}
+      TENDERS_DATA_DIR: /app/sample-data/tenders
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./sample-data:/app/sample-data:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mcp-company-knowledge:
+    build:
+      context: .
+      dockerfile: mcp-servers/company-knowledge/Dockerfile
+    container_name: bidvera-mcp-company-knowledge
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 8002
+      MCP_HOST: 0.0.0.0
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:-bidvera-dev-token}
+      COMPANY_DATA_DIR: /app/sample-data/company
+      DATABASE_URL: postgresql://bidvera:bidverasecret@postgres:5432/bidvera
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./sample-data:/app/sample-data:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mcp-pricing:
+    build:
+      context: .
+      dockerfile: mcp-servers/pricing/Dockerfile
+    container_name: bidvera-mcp-pricing
+    restart: unless-stopped
+    environment:
+      PORT: 8003
+      MCP_HOST: 0.0.0.0
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:-bidvera-dev-token}
+      COMPANY_DATA_DIR: /app/sample-data/company
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./sample-data:/app/sample-data:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mcp-documents:
+    build:
+      context: .
+      dockerfile: mcp-servers/documents/Dockerfile
+    container_name: bidvera-mcp-documents
+    restart: unless-stopped
+    environment:
+      PORT: 8004
+      MCP_HOST: 0.0.0.0
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:-bidvera-dev-token}
+      DOCUMENTS_OUTPUT_DIR: /app/output/documents
+    ports:
+      - "8004:8004"
+    volumes:
+      - documents_data:/app/output/documents
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+  documents_data:

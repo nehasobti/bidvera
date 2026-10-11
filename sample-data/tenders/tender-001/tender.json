@@ -1,0 +1,51 @@
+{
+  "id": "tender-001",
+  "title": "Cloud Migration & Hybrid DevOps Infrastructure",
+  "buyer": "EuroRailways Digital GmbH",
+  "country": "EU",
+  "category": "Cloud Migration",
+  "deadline": "2026-11-20T17:00:00Z",
+  "estimated_budget_eur": 2500000,
+  "summary": "EuroRailways Digital seeks an experienced cloud integration partner to migrate 380+ legacy virtual workloads to AWS and establish automated GitOps DevOps pipelines with 99.95% availability SLA.",
+  "documents": [
+    {
+      "id": "doc-001-main",
+      "name": "RFP_EuroRailways_Cloud_Migration.docx",
+      "type": "main_rfp",
+      "pages": 14
+    },
+    {
+      "id": "doc-001-sec",
+      "name": "RFP_EuroRailways_Cloud_Migration_Annex_Security.docx",
+      "type": "security_annex",
+      "pages": 6
+    }
+  ],
+  "eligibility_criteria": [
+    {
+      "criterion": "Annual Turnover",
+      "threshold": "Minimum \u20ac10,000,000 average over last 3 years",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "Years in Business",
+      "threshold": "Minimum 8 years in IT consultancy",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "ISO 27001 Certification",
+      "threshold": "Valid ISO/IEC 27001 certificate at time of submission",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "Cloud Partner Status",
+      "threshold": "AWS Premier or Advanced Tier Partner",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "Prior Experience",
+      "threshold": "At least 2 enterprise cloud migrations exceeding 250 VMs",
+      "type": "mandatory"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+# Rule-based Effort Estimation Matrix
+version: "1.0.0"
+
+complexity_multipliers:
+  low: 0.70
+  medium: 1.00
+  high: 1.60
+
+category_baseline_hours:
+  architecture_design:
+    description: "System architecture blueprints, high-level design, security baseline"
+    roles:
+      enterprise_architect: 40
+      cloud_solutions_architect: 80
+      security_specialist: 24
+      delivery_manager: 16
+
+  cloud_migration_service:
+    description: "Workload discovery, landing zone, automated wave migrations, cutover"
+    roles:
+      cloud_solutions_architect: 60
+      lead_devops_engineer: 140
+      senior_software_engineer: 100
+      qa_automation_lead: 40
+      delivery_manager: 24
+
+  devops_pipeline:
+    description: "CI/CD automation, GitOps setup, infrastructure as code (Terraform), observability"
+    roles:
+      lead_devops_engineer: 80
+      security_specialist: 20
+      senior_software_engineer: 40
+      qa_automation_lead: 24
+
+  microservices_backend:
+    description: "Service domain decomposition, REST/gRPC API development, database schemas"
+    roles:
+      cloud_solutions_architect: 40
+      senior_software_engineer: 160
+      qa_automation_lead: 60
+      delivery_manager: 20
+
+  data_pipeline:
+    description: "ETL / ELT workflows, lakehouse delta tables, streaming ingestion"
+    roles:
+      principal_data_engineer: 120
+      senior_software_engineer: 60
+      lead_devops_engineer: 30
+      qa_automation_lead: 30
+
+  security_hardening:
+    description: "Zero trust controls, vulnerability remediation, penetration testing, compliance auditing"
+    roles:
+      security_specialist: 60
+      lead_devops_engineer: 40
+      senior_software_engineer: 30
+      delivery_manager: 10
+
+  testing_qa:
+    description: "End-to-end test automation, load / performance testing, security test suites"
+    roles:
+      qa_automation_lead: 80
+      senior_software_engineer: 30
+      lead_devops_engineer: 20
+
+  project_management:
+    description: "Sprint ceremonies, stakeholder reporting, risk register, governance"
+    roles:
+      delivery_manager: 80

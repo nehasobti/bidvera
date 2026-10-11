@@ -1,0 +1,76 @@
+{
+  "company_id": "TYCHON-CORP",
+  "legal_name": "Tychon Software Solutions Private Limited",
+  "trade_name": "Tychon Software",
+  "eu_entity": "Tychon Software GmbH",
+  "founded_year": 2014,
+  "years_in_business": 12,
+  "headquarters": {
+    "eu": {
+      "address": "Leopoldstraße 128, 80802 Munich, Germany",
+      "registration_number": "HRB 248910 (Amtsgericht München)",
+      "vat_id": "DE318920441"
+    },
+    "india": {
+      "address": "Outer Ring Road, Bellandur, Bengaluru, Karnataka 560103, India",
+      "cin": "U72200KA2014PTC073912",
+      "gstin": "29AABCT1234F1Z8"
+    }
+  },
+  "duns_number": "31-592-8812",
+  "financials": {
+    "currency": "EUR",
+    "turnover": [
+      {
+        "fiscal_year": "2025",
+        "turnover_eur": 18500000,
+        "turnover_inr": 1650000000,
+        "ebitda_margin": 0.22,
+        "audited_by": "Deloitte & Touche GmbH"
+      },
+      {
+        "fiscal_year": "2024",
+        "turnover_eur": 15200000,
+        "turnover_inr": 1350000000,
+        "ebitda_margin": 0.20,
+        "audited_by": "Deloitte & Touche GmbH"
+      },
+      {
+        "fiscal_year": "2023",
+        "turnover_eur": 12800000,
+        "turnover_inr": 1140000000,
+        "ebitda_margin": 0.19,
+        "audited_by": "Deloitte & Touche GmbH"
+      }
+    ],
+    "average_annual_turnover_3yr_eur": 15500000
+  },
+  "workforce": {
+    "total_full_time_employees": 285,
+    "software_engineers": 160,
+    "cloud_and_devops_engineers": 65,
+    "data_ai_engineers": 35,
+    "project_and_delivery_managers": 15,
+    "security_and_compliance_officers": 10
+  },
+  "core_competencies": [
+    "Enterprise Cloud Migration (AWS, Azure, GCP)",
+    "Microservices Architecture & API Modernization",
+    "DevOps Automation, GitOps & Platform Engineering",
+    "Data Lakehouse & Real-time AI Analytics",
+    "Cybersecurity Hardening & DevSecOps Compliance"
+  ],
+  "partnerships": [
+    {
+      "partner": "Amazon Web Services",
+      "tier": "AWS Premier Tier Services Partner",
+      "competencies": ["Migration Competency", "DevOps Competency", "Financial Services Competency"]
+    },
+    {
+      "partner": "Microsoft",
+      "tier": "Solutions Partner for Data & AI (Azure)",
+      "competencies": ["Enterprise Analytics", "Azure DevOps"]
+    }
+  ],
+  "overview": "Tychon Software is an international IT services and software development consultancy founded in 2014, operating across the EU and India. With 285+ specialized engineers and over €18.5M in annual turnover, Tychon Software delivers mission-critical enterprise cloud transformations, microservices modernizations, and secure data platforms for public sector, financial services, transportation, and healthcare organizations."
+}

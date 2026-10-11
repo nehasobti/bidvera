@@ -1,0 +1,90 @@
+[
+  {
+    "id": "CS-001",
+    "title": "Deutsche Post & Rail Logistics: Multi-Region Hybrid Cloud Migration",
+    "client": "Major European Rail & Logistics Operator",
+    "industry": "Transportation & Logistics",
+    "country": "Germany (EU)",
+    "year": 2024,
+    "duration_months": 14,
+    "budget_eur": 2400000,
+    "tags": ["cloud-migration", "aws", "devops", "kubernetes", "hybrid-cloud", "terragrunt"],
+    "challenge": "Client operated 450 legacy VMware on-premise virtual machines with increasing hardware maintenance costs, unscalable batch processing during peak holiday seasons, and zero multi-region disaster recovery.",
+    "solution": "Tychon Software designed and executed a 7-stage migration strategy using AWS Application Migration Service and automated Terraform infrastructure modules. Re-architected monolithic scheduling into microservices hosted on Amazon EKS (Kubernetes) with automated Istio service mesh and GitOps pipelines via ArgoCD.",
+    "metrics": {
+      "vms_migrated": 450,
+      "unplanned_downtime_hours": 0,
+      "cost_reduction_percentage": 35.4,
+      "deployment_frequency_increase": "12x",
+      "disaster_recovery_rpo_minutes": 15,
+      "disaster_recovery_rto_minutes": 45
+    },
+    "outcomes": "Achieved zero-downtime cutover across 8 critical European transport nodes, reduced recurring operational cloud spend by 35%, and guaranteed 99.99% availability during peak freight traffic.",
+    "technologies": ["AWS", "Kubernetes", "EKS", "Terraform", "ArgoCD", "PostgreSQL Aurora", "Docker"]
+  },
+  {
+    "id": "CS-002",
+    "title": "Apollo Healthcare Consortium: HIPAA-Compliant Data Lakehouse & AI Analytics",
+    "client": "National Healthcare Network",
+    "industry": "Healthcare",
+    "country": "India & Regional Hubs",
+    "year": 2024,
+    "duration_months": 11,
+    "budget_eur": 1800000,
+    "tags": ["data-lakehouse", "healthcare", "ai-analytics", "hipaa", "spark", "databricks"],
+    "challenge": "Siloed patient health records across 60 hospital facilities led to multi-minute query latency, inability to run population health analytics, and compliance friction with DISHA and HIPAA privacy mandates.",
+    "solution": "Tychon Software built a centralized, encrypted Data Lakehouse on Azure Databricks with Delta Lake. Implemented field-level tokenization, automated role-based access control (RBAC), and streaming ETL pipelines processing real-time HL7 and FHIR clinical feeds.",
+    "metrics": {
+      "records_indexed": 15000000,
+      "query_latency_before_sec": 45.0,
+      "query_latency_after_sec": 1.8,
+      "compliance_audit_score": "100%",
+      "etl_pipelines_automated": 42
+    },
+    "outcomes": "Consolidated 15 million clinical records, cut analytic query execution time by 96%, and enabled real-time predictive bed occupancy models with full HIPAA/DISHA data governance.",
+    "technologies": ["Azure", "Databricks", "Apache Spark", "Delta Lake", "Python", "PowerBI", "Azure Key Vault"]
+  },
+  {
+    "id": "CS-003",
+    "title": "Stockholm Retail & FinServices: Core Banking Microservices Modernization",
+    "client": "Nordic Digital Payment Services AB",
+    "industry": "Financial Services",
+    "country": "Sweden (EU)",
+    "year": 2023,
+    "duration_months": 16,
+    "budget_eur": 3100000,
+    "tags": ["microservices", "fintech", "kubernetes", "spring-boot", "api-gateway", "pci-dss"],
+    "challenge": "Legacy monolithic payment processing engine suffered from slow bi-monthly release cycles, high blast radius during production incidents, and inability to meet strict PCI-DSS audit segregation guidelines.",
+    "solution": "Decomposed monolithic codebase into 28 domain-driven microservices using Spring Boot and Java 21. Deployed onto multi-tenant Kubernetes clusters with Kong API Gateway, mTLS encryption, and distributed tracing via OpenTelemetry.",
+    "metrics": {
+      "monoliths_decomposed": 1,
+      "microservices_deployed": 28,
+      "release_cycle_shortened_days": "from 60 days to daily",
+      "p99_latency_ms": 42,
+      "availability_sla": "99.995%"
+    },
+    "outcomes": "Scaled transactions to 25,000 requests/second with p99 latency under 50ms, achieved full PCI-DSS Level 1 compliance verification, and boosted deployment frequency by 14x.",
+    "technologies": ["Java 21", "Spring Boot", "Kong API Gateway", "Kubernetes", "Kafka", "PostgreSQL", "OpenTelemetry"]
+  },
+  {
+    "id": "CS-004",
+    "title": "Nordic Telecom Platform: GitOps CI/CD & Security Hardening",
+    "client": "Tier-1 Nordic Telecommunications Operator",
+    "industry": "Telecommunications",
+    "country": "Norway / Finland",
+    "year": 2025,
+    "duration_months": 8,
+    "budget_eur": 1200000,
+    "tags": ["devops", "security", "gitops", "argocd", "iso-27001", "devsecops"],
+    "challenge": "Manual release approvals and disparate pipeline tooling resulted in security scan delays, undocumented configuration drift, and slow incident remediation.",
+    "solution": "Implemented enterprise-wide GitOps architecture using GitLab CI, ArgoCD, and automated vulnerability scanning gates (Trivy, SonarQube, Snyk). Enforced immutable infrastructure and cryptographic image signing with Cosign.",
+    "metrics": {
+      "mttr_reduction_percent": 68,
+      "vulnerability_remediation_speedup": "3.5x",
+      "automated_security_coverage": "100%",
+      "lead_time_for_changes_hours": 1.2
+    },
+    "outcomes": "Reduced Mean Time To Recovery (MTTR) by 68%, automated all ISO 27001 release audit trails, and established zero-touch staging-to-production promotions.",
+    "technologies": ["GitLab CI", "ArgoCD", "Kubernetes", "Cosign", "Trivy", "SonarQube", "Terraform"]
+  }
+]

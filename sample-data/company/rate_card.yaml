@@ -1,0 +1,90 @@
+# Tychon Software Standard Rate Card
+currency_base: "EUR"
+effective_date: "2026-01-01"
+valid_until: "2026-12-31"
+
+exchange_rates:
+  EUR: 1.0
+  USD: 1.08
+  INR: 90.50
+
+roles:
+  enterprise_architect:
+    title: "Enterprise / Chief Cloud Architect"
+    seniority: "Principal / Director"
+    daily_rate_eur: 1450.00
+    hourly_rate_eur: 181.25
+    daily_rate_usd: 1566.00
+    hourly_rate_usd: 195.75
+    daily_rate_inr: 131225.00
+    hourly_rate_inr: 16403.00
+
+  cloud_solutions_architect:
+    title: "Senior Cloud Solutions Architect"
+    seniority: "Senior"
+    daily_rate_eur: 1200.00
+    hourly_rate_eur: 150.00
+    daily_rate_usd: 1296.00
+    hourly_rate_usd: 162.00
+    daily_rate_inr: 108600.00
+    hourly_rate_inr: 13575.00
+
+  lead_devops_engineer:
+    title: "Lead DevOps / Platform Engineer"
+    seniority: "Lead"
+    daily_rate_eur: 980.00
+    hourly_rate_eur: 122.50
+    daily_rate_usd: 1058.40
+    hourly_rate_usd: 132.30
+    daily_rate_inr: 88690.00
+    hourly_rate_inr: 11086.00
+
+  senior_software_engineer:
+    title: "Senior Full-Stack / Backend Engineer"
+    seniority: "Senior"
+    daily_rate_eur: 850.00
+    hourly_rate_eur: 106.25
+    daily_rate_usd: 918.00
+    hourly_rate_usd: 114.75
+    daily_rate_inr: 76925.00
+    hourly_rate_inr: 9615.00
+
+  principal_data_engineer:
+    title: "Principal Data & AI Engineer"
+    seniority: "Lead"
+    daily_rate_eur: 1100.00
+    hourly_rate_eur: 137.50
+    daily_rate_usd: 1188.00
+    hourly_rate_usd: 148.50
+    daily_rate_inr: 99550.00
+    hourly_rate_inr: 12443.00
+
+  security_specialist:
+    title: "Cybersecurity & Compliance Specialist"
+    seniority: "Senior"
+    daily_rate_eur: 1150.00
+    hourly_rate_eur: 143.75
+    daily_rate_usd: 1242.00
+    hourly_rate_usd: 155.25
+    daily_rate_inr: 104075.00
+    hourly_rate_inr: 13009.00
+
+  qa_automation_lead:
+    title: "QA Automation & Test Engineer"
+    seniority: "Mid-Senior"
+    daily_rate_eur: 680.00
+    hourly_rate_eur: 85.00
+    daily_rate_usd: 734.40
+    hourly_rate_usd: 91.80
+    daily_rate_inr: 61540.00
+    hourly_rate_inr: 7692.00
+
+  delivery_manager:
+    title: "Project / Delivery Manager (PMP)"
+    seniority: "Senior"
+    daily_rate_eur: 920.00
+    hourly_rate_eur: 115.00
+    daily_rate_usd: 993.60
+    hourly_rate_usd: 124.20
+    daily_rate_inr: 83260.00
+    hourly_rate_inr: 10407.00

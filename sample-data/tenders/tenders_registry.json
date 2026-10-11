@@ -1,0 +1,134 @@
+[
+  {
+    "id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure",
+    "buyer": "EuroRailways Digital GmbH",
+    "country": "EU",
+    "category": "Cloud Migration",
+    "deadline": "2026-11-20T17:00:00Z",
+    "estimated_budget_eur": 2500000,
+    "summary": "EuroRailways Digital seeks an experienced cloud integration partner to migrate 380+ legacy virtual workloads to AWS and establish automated GitOps DevOps pipelines with 99.95% availability SLA.",
+    "documents": [
+      {
+        "id": "doc-001-main",
+        "name": "RFP_EuroRailways_Cloud_Migration.docx",
+        "type": "main_rfp",
+        "pages": 14
+      },
+      {
+        "id": "doc-001-sec",
+        "name": "RFP_EuroRailways_Cloud_Migration_Annex_Security.docx",
+        "type": "security_annex",
+        "pages": 6
+      }
+    ],
+    "eligibility_criteria": [
+      {
+        "criterion": "Annual Turnover",
+        "threshold": "Minimum \u20ac10,000,000 average over last 3 years",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "Years in Business",
+        "threshold": "Minimum 8 years in IT consultancy",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "ISO 27001 Certification",
+        "threshold": "Valid ISO/IEC 27001 certificate at time of submission",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "Cloud Partner Status",
+        "threshold": "AWS Premier or Advanced Tier Partner",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "Prior Experience",
+        "threshold": "At least 2 enterprise cloud migrations exceeding 250 VMs",
+        "type": "mandatory"
+      }
+    ]
+  },
+  {
+    "id": "tender-002",
+    "title": "Enterprise Healthcare Data Lakehouse & AI Analytics",
+    "buyer": "National Health Consortium",
+    "country": "India",
+    "category": "Data & AI",
+    "deadline": "2026-12-05T18:00:00Z",
+    "estimated_budget_eur": 1950000,
+    "summary": "Implementation of a centralized, secure clinical data lakehouse, real-time HL7/FHIR streaming ingestion, and predictive AI analytics platform across regional medical hubs.",
+    "documents": [
+      {
+        "id": "doc-002-main",
+        "name": "RFP_NHC_Healthcare_Data_Platform.docx",
+        "type": "main_rfp",
+        "pages": 12
+      },
+      {
+        "id": "doc-002-tech",
+        "name": "RFP_NHC_Technical_Specs.docx",
+        "type": "technical_specs",
+        "pages": 8
+      }
+    ],
+    "eligibility_criteria": [
+      {
+        "criterion": "Annual Turnover",
+        "threshold": "Minimum \u20b9100 Crore / \u20ac11M",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "Healthcare Data Experience",
+        "threshold": "Demonstrated lakehouse deployment with >10M records",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "CMMI Level",
+        "threshold": "CMMI Maturity Level 3 or higher",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "ISO 9001 / ISO 27001",
+        "threshold": "Active certifications required",
+        "type": "mandatory"
+      }
+    ]
+  },
+  {
+    "id": "tender-003",
+    "title": "Core Banking Microservices Modernization",
+    "buyer": "Nordic Logistics & FinServices AB",
+    "country": "EU",
+    "category": "Software Development",
+    "deadline": "2026-11-30T16:00:00Z",
+    "estimated_budget_eur": 3200000,
+    "summary": "Decomposition of monolithic transaction processing into domain-driven microservices on Kubernetes, API gateway integration, and PCI-DSS compliance.",
+    "documents": [
+      {
+        "id": "doc-003-main",
+        "name": "RFP_Nordic_Microservices_Modernization.docx",
+        "type": "main_rfp",
+        "pages": 15
+      }
+    ],
+    "eligibility_criteria": [
+      {
+        "criterion": "Annual Turnover",
+        "threshold": "Minimum \u20ac12,000,000",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "Financial Services Experience",
+        "threshold": "At least 1 core banking / payment modernization project",
+        "type": "mandatory"
+      },
+      {
+        "criterion": "ISO 27001",
+        "threshold": "Mandatory active certification",
+        "type": "mandatory"
+      }
+    ]
+  }
+]

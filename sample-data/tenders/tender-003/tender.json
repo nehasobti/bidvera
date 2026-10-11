@@ -1,0 +1,35 @@
+{
+  "id": "tender-003",
+  "title": "Core Banking Microservices Modernization",
+  "buyer": "Nordic Logistics & FinServices AB",
+  "country": "EU",
+  "category": "Software Development",
+  "deadline": "2026-11-30T16:00:00Z",
+  "estimated_budget_eur": 3200000,
+  "summary": "Decomposition of monolithic transaction processing into domain-driven microservices on Kubernetes, API gateway integration, and PCI-DSS compliance.",
+  "documents": [
+    {
+      "id": "doc-003-main",
+      "name": "RFP_Nordic_Microservices_Modernization.docx",
+      "type": "main_rfp",
+      "pages": 15
+    }
+  ],
+  "eligibility_criteria": [
+    {
+      "criterion": "Annual Turnover",
+      "threshold": "Minimum \u20ac12,000,000",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "Financial Services Experience",
+      "threshold": "At least 1 core banking / payment modernization project",
+      "type": "mandatory"
+    },
+    {
+      "criterion": "ISO 27001",
+      "threshold": "Mandatory active certification",
+      "type": "mandatory"
+    }
+  ]
+}

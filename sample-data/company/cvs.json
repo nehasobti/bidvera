@@ -1,0 +1,165 @@
+[
+  {
+    "id": "CV-001",
+    "name": "Dr. Markus Weber",
+    "role": "Chief Cloud Architect",
+    "years_of_experience": 18,
+    "location": "Munich, Germany",
+    "education": "Ph.D. in Computer Science, Technical University of Munich (TUM)",
+    "certifications": [
+      "AWS Certified Solutions Architect – Professional",
+      "TOGAF 9.2 Certified Enterprise Architect",
+      "Google Cloud Certified Professional Cloud Architect"
+    ],
+    "skills": [
+      "Enterprise Cloud Architecture",
+      "Hybrid & Multi-Cloud Strategy",
+      "AWS Well-Architected Framework",
+      "Disaster Recovery & High Availability",
+      "Terraform",
+      "Kubernetes"
+    ],
+    "bio": "Dr. Markus Weber is Tychon Software's Chief Cloud Architect with over 18 years leading large-scale distributed architectures. He has guided 35+ enterprise cloud migrations across Europe, specializing in high-throughput transportation, government, and financial platforms.",
+    "selected_projects": [
+      {
+        "title": "Deutsche Post Rail Cloud Transformation",
+        "role": "Lead Migration Architect",
+        "impact": "Architected zero-downtime migration of 450 VMs to AWS EKS with multi-region failover."
+      },
+      {
+        "title": "Bavarian Public Administration Portal Modernization",
+        "role": "Chief Architect",
+        "impact": "Designed GDPR-compliant government cloud architecture serving 6M citizens."
+      }
+    ]
+  },
+  {
+    "id": "CV-002",
+    "name": "Priya Sharma",
+    "role": "Lead DevOps & Platform Engineer",
+    "years_of_experience": 11,
+    "location": "Bengaluru, India",
+    "education": "B.Tech in Information Technology, National Institute of Technology (NIT)",
+    "certifications": [
+      "Certified Kubernetes Administrator (CKA)",
+      "HashiCorp Certified: Terraform Associate",
+      "AWS Certified DevOps Engineer – Professional"
+    ],
+    "skills": [
+      "Kubernetes & Service Mesh (Istio)",
+      "GitOps (ArgoCD, Flux)",
+      "Terraform & Terragrunt",
+      "CI/CD Pipeline Automation",
+      "Prometheus, Grafana, OpenTelemetry",
+      "Linux Kernel Performance Tuning"
+    ],
+    "bio": "Priya Sharma leads Tychon's DevOps & Platform Engineering practice, having implemented containerized infrastructure and automated GitOps workflows for top-tier enterprise clients across Europe and Asia.",
+    "selected_projects": [
+      {
+        "title": "Nordic Telecom Platform GitOps",
+        "role": "Lead DevOps Architect",
+        "impact": "Reduced deployment lead time from 3 weeks to 1.2 hours using ArgoCD and automated canary releases."
+      },
+      {
+        "title": "Apollo Healthcare Data Lakehouse Infrastructure",
+        "role": "Platform Lead",
+        "impact": "Provisioned automated HIPAA-compliant infrastructure with Terraform on Azure."
+      }
+    ]
+  },
+  {
+    "id": "CV-003",
+    "name": "Alexander Lindqvist",
+    "role": "Enterprise Security Architect",
+    "years_of_experience": 14,
+    "location": "Stockholm, Sweden / Munich, Germany",
+    "education": "M.Sc. in Information Security, KTH Royal Institute of Technology",
+    "certifications": [
+      "Certified Information Systems Security Professional (CISSP)",
+      "Certified Information Security Manager (CISM)",
+      "ISO/IEC 27001 Lead Auditor"
+    ],
+    "skills": [
+      "DevSecOps & Zero Trust Architecture",
+      "ISO 27001 / SOC 2 / GDPR Compliance",
+      "Threat Modeling & Penetration Testing",
+      "Cryptographic Key Management (KMS, HSM)",
+      "Vulnerability Management (Snyk, Trivy)"
+    ],
+    "bio": "Alexander Lindqvist brings 14 years of cybersecurity leadership, orchestrating ISO 27001, GDPR, and PCI-DSS compliance programs for financial and European public sector organizations.",
+    "selected_projects": [
+      {
+        "title": "Stockholm Retail Banking Security Modernization",
+        "role": "Principal Security Architect",
+        "impact": "Engineered mTLS service mesh security and achieved zero critical findings in external PCI-DSS audit."
+      },
+      {
+        "title": "European Union Cross-Border Data Gateway",
+        "role": "Compliance & Security Lead",
+        "impact": "Authored security architecture documentation and GDPR compliance roadmap."
+      }
+    ]
+  },
+  {
+    "id": "CV-004",
+    "name": "Rohit Verma",
+    "role": "Principal Data & AI Engineer",
+    "years_of_experience": 12,
+    "location": "Bengaluru, India",
+    "education": "M.Tech in Data Science, Indian Institute of Science (IISc)",
+    "certifications": [
+      "Databricks Certified Data Engineer Professional",
+      "AWS Certified Data Analytics – Specialty",
+      "TensorFlow Developer Certified"
+    ],
+    "skills": [
+      "Data Lakehouse (Delta Lake, Apache Iceberg)",
+      "Apache Spark, PySpark & Flink",
+      "Real-time Streaming (Kafka)",
+      "Data Governance & Lineage",
+      "Python, SQL, Scala",
+      "LLM Integration & Retrieval-Augmented Generation (RAG)"
+    ],
+    "bio": "Rohit Verma specializes in modern data architecture, lakehouse engineering, and enterprise analytics, having built resilient data platforms handling tens of millions of events daily.",
+    "selected_projects": [
+      {
+        "title": "Apollo Healthcare Data Lakehouse",
+        "role": "Lead Data Architect",
+        "impact": "Architected Spark ETL pipelines processing 15M records and reducing query latency by 96%."
+      },
+      {
+        "title": "Global Logistics Fleet Predictive Telematics",
+        "role": "Principal Data Engineer",
+        "impact": "Implemented Kafka streaming engine capturing 40,000 telemetry events per second."
+      }
+    ]
+  },
+  {
+    "id": "CV-005",
+    "name": "Elena Rostova",
+    "role": "Senior Project & Delivery Director",
+    "years_of_experience": 15,
+    "location": "Munich, Germany",
+    "education": "M.Sc. in Management & Engineering, University of Stuttgart",
+    "certifications": [
+      "Project Management Professional (PMP)",
+      "Certified Scrum Master (CSM)",
+      "PRINCE2 Practitioner"
+    ],
+    "skills": [
+      "Enterprise Agile Delivery (SAFe)",
+      "RFP & Tender Bid Management",
+      "SLA & Risk Management",
+      "Budget & Resource Governance",
+      "Cross-Border Team Orchestration"
+    ],
+    "bio": "Elena Rostova oversees complex software deliveries and tender commitments at Tychon Software, with a spotless track record of on-time, within-budget completion across public and private contracts.",
+    "selected_projects": [
+      {
+        "title": "European Rail Multi-Year IT Services Contract",
+        "role": "Engagement Director",
+        "impact": "Managed 40+ engineering staff across 3 sites, maintaining 99.8% SLA compliance for 24 months."
+      }
+    ]
+  }
+]
