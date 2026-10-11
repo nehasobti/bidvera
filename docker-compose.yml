@@ -105,6 +105,47 @@ services:
       timeout: 5s
       retries: 3
 
+  agent:
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    container_name: bidvera-agent
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mcp-tender-search:
+        condition: service_healthy
+      mcp-company-knowledge:
+        condition: service_healthy
+      mcp-pricing:
+        condition: service_healthy
+      mcp-documents:
+        condition: service_healthy
+    environment:
+      PORT: 8000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://bidvera:bidverasecret@postgres:5432/bidvera
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:-bidvera-dev-token}
+      TENDER_SEARCH_URL: http://mcp-tender-search:8001/sse
+      COMPANY_KNOWLEDGE_URL: http://mcp-company-knowledge:8002/sse
+      PRICING_URL: http://mcp-pricing:8003/sse
+      DOCUMENTS_URL: http://mcp-documents:8004/sse
+      LLM_PROVIDER: ${LLM_PROVIDER:-fake}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sample-data:/app/sample-data:ro
+      - documents_data:/app/output/documents
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 volumes:
   postgres_data:
   documents_data:
