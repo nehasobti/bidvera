@@ -50,13 +50,6 @@ export function Navbar() {
             <Inbox className="w-4 h-4 text-amber-600" />
             <span>Approvals Inbox</span>
           </Link>
-
-          <div className="hidden md:flex items-center gap-2 pl-4 border-l border-slate-200 ml-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              FastMCP Connected
-            </span>
-          </div>
         </nav>
       </div>
     </header>

@@ -24,3 +24,16 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Hide Next.js dev tools floating indicator / portal overlay */
+nextjs-portal,
+#nextjs-dev-overlay,
+[data-nextjs-dev-tools-indicator],
+[data-nextjs-toast-wrapper],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
