@@ -1,46 +1,62 @@
 import Link from "next/link";
-import { FileText, Inbox, Layers, CheckCircle2, Search } from "lucide-react";
+import { FileText, Inbox, Layers, Search, Sparkles, Shield, ChevronRight } from "lucide-react";
 
 export function Navbar() {
   return (
-    <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80 shadow-xs transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+        {/* Brand Logo & Name */}
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-500 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
               B
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-gray-900 tracking-tight text-lg">Bidvera</span>
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold -mt-1">
-                Autonomous Tender Agent
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-slate-900 tracking-tight text-lg">Bidvera</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100/70 text-blue-700 tracking-wide">
+                  AI AGENT
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-500 font-medium -mt-0.5">
+                Autonomous Tender Intelligence
               </span>
             </div>
           </Link>
         </div>
 
-        <nav className="flex items-center gap-1 sm:gap-2">
+        {/* Navigation Items */}
+        <nav className="flex items-center gap-2">
           <Link
             href="/tenders"
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:bg-slate-100/70 rounded-lg transition"
           >
-            <Search className="w-4 h-4 text-gray-500" />
-            Tenders
+            <Search className="w-4 h-4 text-slate-500" />
+            <span>Tenders</span>
           </Link>
+
           <Link
             href="/bids"
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:bg-slate-100/70 rounded-lg transition"
           >
-            <Layers className="w-4 h-4 text-gray-500" />
-            Active Bids
+            <Layers className="w-4 h-4 text-slate-500" />
+            <span>Active Bids</span>
           </Link>
+
           <Link
             href="/approvals"
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-md transition"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100/80 border border-amber-200/80 rounded-lg shadow-xs transition"
           >
             <Inbox className="w-4 h-4 text-amber-600" />
-            Approvals Inbox
+            <span>Approvals Inbox</span>
           </Link>
+
+          <div className="hidden md:flex items-center gap-2 pl-4 border-l border-slate-200 ml-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              FastMCP Connected
+            </span>
+          </div>
         </nav>
       </div>
     </header>
