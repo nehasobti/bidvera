@@ -23,10 +23,28 @@ class DeterministicChatModel(BaseChatModel):
         **kwargs: Any,
     ) -> ChatResult:
         last_msg = messages[-1].content if messages else ""
+        last_str = str(last_msg).lower()
         content = "OK"
 
+        # Check section drafting FIRST so "Mapped Requirements:" does not trigger requirement extraction
+        if "section title:" in last_str or "draft a comprehensive" in last_str:
+            title_line = [line for line in str(last_msg).split("\n") if "section title:" in line.lower()]
+            sec_title = title_line[0].split(":", 1)[1].strip() if title_line else "Technical Section"
+            content = (
+                f"### 1. Strategic Context & Alignment\n"
+                f"Tychon Software brings mature enterprise delivery capabilities directly aligned with the requirements for {sec_title}. "
+                f"Our certified engineering practices and battle-tested methodology ensure robust, zero-disruption delivery adhering to international standards.\n\n"
+                f"### 2. Technical Approach & Solution Architecture\n"
+                f"Our multidisciplinary teams leverage modular infrastructure as code, automated testing pipelines, and strict security baselines. "
+                f"Every deliverable is integrated through continuous verification gates to achieve high reliability and strict compliance.\n\n"
+                f"- **Architecture & Standards:** Built upon CIS Benchmark Level 2 controls and verified AWS Well-Architected Framework principles.\n"
+                f"- **Delivery Velocity:** Iterative sprint execution paired with automated smoke suites to accelerate turnaround while mitigating production risks.\n"
+                f"- **Quality Assurance:** Mandatory peer reviews, automated unit and integration tests with zero regression tolerance.\n\n"
+                f"### 3. Traceability & Governance\n"
+                f"All mapped requirements are continuously traced through our automated compliance matrix, ensuring full audit readiness and SLA adherence across all operational phases."
+            )
         # If user/system prompt asked for JSON requirement extraction
-        if "requirement" in str(last_msg).lower() or "extract" in str(last_msg).lower():
+        elif "extract" in last_str or "extract_requirements" in last_str or "atomic requirement" in last_str:
             content = json.dumps({
                 "requirements": [
                     {
@@ -81,23 +99,6 @@ class DeterministicChatModel(BaseChatModel):
                     },
                 ],
             })
-        elif "section title:" in str(last_msg).lower() or "draft a comprehensive" in str(last_msg).lower():
-            # Generate realistic structured proposal prose for the section
-            title_line = [line for line in str(last_msg).split("\n") if "section title:" in line.lower()]
-            sec_title = title_line[0].split(":", 1)[1].strip() if title_line else "Technical Section"
-            content = (
-                f"### 1. Strategic Context & Alignment\n"
-                f"Tychon Software brings mature enterprise delivery capabilities directly aligned with the requirements for {sec_title}. "
-                f"Our certified engineering practices and battle-tested methodology ensure robust, zero-disruption delivery adhering to international standards.\n\n"
-                f"### 2. Technical Approach & Solution Architecture\n"
-                f"Our multidisciplinary teams leverage modular infrastructure as code, automated testing pipelines, and strict security baselines. "
-                f"Every deliverable is integrated through continuous verification gates to achieve high reliability and strict compliance.\n\n"
-                f"- **Architecture & Standards:** Built upon CIS Benchmark Level 2 controls and verified AWS Well-Architected Framework principles.\n"
-                f"- **Delivery Velocity:** Iterative sprint execution paired with automated smoke suites to accelerate turnaround while mitigating production risks.\n"
-                f"- **Quality Assurance:** Mandatory peer reviews, automated unit and integration tests with zero regression tolerance.\n\n"
-                f"### 3. Traceability & Governance\n"
-                f"All mapped requirements are continuously traced through our automated compliance matrix, ensuring full audit readiness and SLA adherence across all operational phases."
-            )
 
         message = AIMessage(content=content)
         generation = ChatGeneration(message=message)
