@@ -55,6 +55,9 @@ async def list_bids() -> list[dict[str, Any]]:
                 "requirements_count": len(val.get("requirements", [])),
                 "eligibility_recommendation": val.get("eligibility", {}).get("recommendation", "unclear"),
                 "has_outline": len(val.get("outline", [])) > 0,
+                "sections_count": len(val.get("sections", [])),
+                "total_price": val.get("pricing", {}).get("total_price"),
+                "currency": val.get("pricing", {}).get("currency", "EUR"),
             })
     return results
 
@@ -164,6 +167,8 @@ async def get_bid_status(bid_id: str) -> dict[str, Any]:
         "requirements_count": len(values.get("requirements", [])),
         "eligibility": values.get("eligibility", {}),
         "outline": values.get("outline", []),
+        "sections": values.get("sections", []),
+        "pricing": values.get("pricing", {}),
         "decisions": values.get("decisions", []),
         "is_waiting_for_approval": is_waiting,
         "pending_checkpoint": interrupt_payload,

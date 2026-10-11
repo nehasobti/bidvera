@@ -44,11 +44,63 @@ export interface EligibilityResult {
 
 export interface OutlineSection {
   id: string;
+  section_number?: number;
   title: string;
   description: string;
   mapped_requirements: string[];
   target_pages?: number;
+  word_limit?: number;
   status?: string;
+}
+
+export interface DraftedSection {
+  section_id: string;
+  title: string;
+  content: string;
+  mapped_requirements: string[];
+  word_count?: number;
+  status?: string;
+}
+
+export interface PriceLineItem {
+  role_key: string;
+  role_title: string;
+  hours: number;
+  days: number;
+  hourly_rate: number;
+  daily_rate: number;
+  base_cost: number;
+  margin_amount: number;
+  line_total: number;
+}
+
+export interface PriceSheet {
+  currency: string;
+  margin_percentage: number;
+  lines?: PriceLineItem[];
+  line_items?: PriceLineItem[];
+  total_hours: number;
+  total_days?: number;
+  total_person_days?: number;
+  subtotal_base_cost: number;
+  total_margin: number;
+  grand_total?: number;
+  total_price?: number;
+  blended_hourly_rate: number;
+  blended_daily_rate: number;
+  assumptions?: string[];
+}
+
+export interface CommercialPricing {
+  effort?: {
+    total_hours: number;
+    total_days: number;
+    role_summary: Record<string, number>;
+  };
+  price_sheet?: PriceSheet;
+  currency: string;
+  total_price: number;
+  total_days: number;
 }
 
 export interface BidDecision {
@@ -82,6 +134,8 @@ export interface BidRecord {
   requirements_count?: number;
   eligibility?: EligibilityResult;
   outline?: OutlineSection[];
+  sections?: DraftedSection[];
+  pricing?: CommercialPricing;
   decisions?: BidDecision[];
   is_waiting_for_approval?: boolean;
   pending_checkpoint?: any;

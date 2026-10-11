@@ -106,6 +106,25 @@ def merge_requirements(
     return merged
 
 
+def merge_sections(
+    current: list[dict[str, Any]],
+    incoming: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Reducer to merge parallel drafted section branches."""
+    existing_ids = {s.get("section_id") for s in current if s.get("section_id")}
+    merged = list(current)
+    for inc in incoming:
+        sec_id = inc.get("section_id")
+        if sec_id and sec_id in existing_ids:
+            # Replace existing section with updated draft
+            merged = [inc if s.get("section_id") == sec_id else s for s in merged]
+        else:
+            merged.append(inc)
+            if sec_id:
+                existing_ids.add(sec_id)
+    return merged
+
+
 class BidState(TypedDict):
     """Global state container for a single bid workflow thread."""
 
@@ -127,8 +146,8 @@ class BidState(TypedDict):
     # 6. Response outline & mapped requirements
     outline: list[dict[str, Any]]
 
-    # 7. Drafted sections
-    sections: list[dict[str, Any]]
+    # 7. Drafted sections (merged from parallel drafting branches via reducer)
+    sections: Annotated[list[dict[str, Any]], merge_sections]
 
     # 8. Commercial pricing
     pricing: dict[str, Any]

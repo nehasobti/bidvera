@@ -110,3 +110,27 @@ async def call_mcp_tool(
             return first_text
 
     return res
+
+
+async def call_fastmcp_tool(
+    server_name: str,
+    tool_name: str,
+    arguments: dict[str, Any],
+) -> Any:
+    """Direct helper to call an MCP tool on a named server."""
+    mcp = _get_server_mcp(server_name)
+    res = await mcp.call_tool(tool_name, arguments)
+
+    if isinstance(res, tuple) and len(res) >= 2 and isinstance(res[1], dict) and "result" in res[1]:
+        return res[1]["result"]
+
+    blocks = res[0] if isinstance(res, (tuple, list)) else [res]
+    if isinstance(blocks, list) and len(blocks) > 0 and hasattr(blocks[0], "text"):
+        first_text = blocks[0].text
+        try:
+            return json.loads(first_text)
+        except Exception:
+            return first_text
+
+    return res
+

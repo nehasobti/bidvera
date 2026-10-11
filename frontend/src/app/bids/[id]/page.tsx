@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { fetchBid, submitBidDecision } from "@/lib/api";
 import { formatDate } from "@/lib/date";
-import { BidRecord, Requirement, OutlineSection } from "@/types";
+import { BidRecord, Requirement, OutlineSection, DraftedSection, CommercialPricing } from "@/types";
 import {
   FileText,
   CheckCircle2,
@@ -13,16 +13,17 @@ import {
   Clock,
   Layers,
   ShieldCheck,
-  ChevronRight,
   ListOrdered,
   ArrowLeft,
   Check,
   RotateCw,
-  Sparkles,
   Building2,
   Calendar,
-  Tag,
   CheckCheck,
+  DollarSign,
+  Edit3,
+  Coins,
+  FileCheck,
 } from "lucide-react";
 
 export default function BidWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,9 +33,9 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
   const [bid, setBid] = useState<BidRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"timeline" | "requirements" | "eligibility" | "outline">(
-    "timeline"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "timeline" | "requirements" | "eligibility" | "outline" | "sections" | "pricing"
+  >("timeline");
   const [decisionSubmitting, setDecisionSubmitting] = useState(false);
   const [comment, setComment] = useState("");
 
@@ -99,6 +100,8 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
   const eligibility = bid.eligibility;
   const requirements: Requirement[] = (bid as any).requirements || [];
   const outline: OutlineSection[] = (bid as any).outline || [];
+  const sections: DraftedSection[] = (bid as any).sections || [];
+  const pricing: CommercialPricing = (bid as any).pricing || {};
 
   return (
     <div className="space-y-6 pb-16">
@@ -138,6 +141,13 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                   Awaiting Executive Decision
                 </span>
               )}
+
+              {status === "pricing_calculated" && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  Drafting & Pricing Complete
+                </span>
+              )}
             </div>
 
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -154,6 +164,14 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 <span>Deadline: {formatDate(bid.bid?.deadline)}</span>
               </span>
+              {pricing.total_price && (
+                <>
+                  <span>&bull;</span>
+                  <span className="font-semibold text-emerald-700">
+                    Quote: €{pricing.total_price.toLocaleString()} ({pricing.total_days} Person-Days)
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
@@ -195,7 +213,7 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </h3>
                 <p className="text-xs text-amber-900 leading-relaxed max-w-3xl">
                   Bidvera completed automated document ingestion, extraction of {requirements.length} atomic
-                  requirements, and validation against Tychon corporate credentials. Sign-off is required to proceed to proposal outline planning.
+                  requirements, and validation against Tychon corporate credentials. Sign-off is required to proceed to proposal outline planning, parallel section drafting, and commercial pricing.
                 </p>
               </div>
             </div>
@@ -218,16 +236,16 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 {decisionSubmitting ? (
                   <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                 )}
-                <span>Approve & Generate Outline</span>
+                <span>Approve & Generate Full Proposal</span>
               </button>
               <button
                 onClick={() => handleDecision("no-bid")}
                 disabled={decisionSubmitting}
                 className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white border border-red-300 hover:bg-red-50 text-red-700 rounded-xl text-xs font-bold transition disabled:opacity-50"
               >
-                <XCircle className="w-4 h-4 text-red-500" />
+                <XCircle className="w-3.5 h-3.5 text-red-500" />
                 <span>Reject (No-Bid)</span>
               </button>
             </div>
@@ -236,17 +254,19 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
       )}
 
       {/* Tabs Navigation */}
-      <div className="border-b border-slate-200 flex gap-6 text-xs font-bold">
+      <div className="border-b border-slate-200 flex gap-6 text-xs font-bold overflow-x-auto">
         {[
           { key: "timeline", label: "Execution Timeline", icon: Layers },
           { key: "requirements", label: `Requirements (${requirements.length})`, icon: ListOrdered },
           { key: "eligibility", label: "Corporate Qualification", icon: ShieldCheck },
-          { key: "outline", label: `Proposal Outline (${outline.length})`, icon: FileText },
+          { key: "outline", label: `Outline (${outline.length})`, icon: FileText },
+          { key: "sections", label: `Drafted Sections (${sections.length})`, icon: Edit3 },
+          { key: "pricing", label: "Commercial Pricing", icon: DollarSign },
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key as any)}
-            className={`pb-3.5 flex items-center gap-2 border-b-2 transition ${
+            className={`pb-3.5 flex items-center gap-2 border-b-2 whitespace-nowrap transition ${
               activeTab === key
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-slate-500 hover:text-slate-800"
@@ -303,6 +323,22 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                     ? "Bypassed due to No-Bid executive decision."
                     : "Awaiting prior milestone.",
                 done: outline.length > 0 || status === "no_bid_closed",
+              },
+              {
+                step: "7. Parallel Section Drafting (Company Knowledge Grounding)",
+                desc:
+                  sections.length > 0
+                    ? `Drafted ${sections.length} proposal sections in parallel with verified case studies and ISO credentials.`
+                    : "Awaiting approval.",
+                done: sections.length > 0,
+              },
+              {
+                step: "8. Commercial Pricing & Effort Estimation",
+                desc:
+                  pricing.total_price
+                    ? `Compiled commercial rate sheet: €${pricing.total_price.toLocaleString()} across ${pricing.total_days} person-days.`
+                    : "Awaiting drafting completion.",
+                done: !!pricing.total_price,
               },
             ].map((item, idx) => (
               <div key={idx} className="flex items-start gap-4">
@@ -460,9 +496,9 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                       </span>
                       <h4 className="text-sm font-bold text-slate-900">{sec.title}</h4>
                     </div>
-                    {sec.target_pages && (
+                    {sec.word_limit && (
                       <span className="text-xs text-slate-500 font-medium">
-                        Target: {sec.target_pages} pages
+                        Target: {sec.word_limit} words
                       </span>
                     )}
                   </div>
@@ -487,6 +523,189 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 5: Drafted Sections */}
+      {activeTab === "sections" && (
+        <div className="space-y-4">
+          {sections.length === 0 ? (
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+              <Edit3 className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+              <h4 className="text-sm font-bold text-slate-900">Sections Not Drafted Yet</h4>
+              <p className="text-xs text-slate-500 mt-1">
+                Sections will be drafted in parallel upon human approval at the Bid Decision gate.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {sections.map((sec, idx) => (
+                <div
+                  key={sec.section_id || idx}
+                  className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-4"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                        Section {idx + 1}
+                      </span>
+                      <h4 className="text-base font-bold text-slate-900">{sec.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-md">
+                        {sec.word_count || sec.content.split(" ").length} words
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="prose prose-sm max-w-none text-slate-700 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans">
+                    {sec.content}
+                  </div>
+
+                  {sec.mapped_requirements && sec.mapped_requirements.length > 0 && (
+                    <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-slate-500 mr-1">
+                        Traceable Requirements:
+                      </span>
+                      {sec.mapped_requirements.map((reqId: string) => (
+                        <span
+                          key={reqId}
+                          className="font-mono text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200"
+                        >
+                          {reqId}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Tab 6: Commercial Pricing */}
+      {activeTab === "pricing" && (
+        <div className="space-y-6">
+          {!pricing.total_price ? (
+            <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+              <Coins className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+              <h4 className="text-sm font-bold text-slate-900">Pricing Not Compiled Yet</h4>
+              <p className="text-xs text-slate-500 mt-1">
+                Pricing will calculate automatically upon section generation completion.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Summary Metrics */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Total Commercial Quote</div>
+                  <div className="text-2xl font-extrabold text-slate-900 mt-1">
+                    €{pricing.total_price?.toLocaleString()}
+                  </div>
+                  <div className="text-[11px] text-emerald-600 font-semibold mt-1">
+                    Fixed-Price Delivery
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Total Effort</div>
+                  <div className="text-2xl font-extrabold text-slate-900 mt-1">
+                    {pricing.effort?.total_hours || pricing.total_days * 8}h
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium mt-1">
+                    {pricing.total_days} Person-Days (8h/day)
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Target Margin</div>
+                  <div className="text-2xl font-extrabold text-emerald-700 mt-1">
+                    {((pricing.price_sheet?.margin_percentage || 0.22) * 100).toFixed(0)}%
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium mt-1">
+                    Gross Margin Floor
+                  </div>
+                </div>
+
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+                  <div className="text-xs font-semibold text-slate-400">Blended Daily Rate</div>
+                  <div className="text-2xl font-extrabold text-indigo-700 mt-1">
+                    €{pricing.price_sheet?.blended_daily_rate?.toFixed(2) || "1,531.50"}
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium mt-1">
+                    Blended Hourly: €{pricing.price_sheet?.blended_hourly_rate?.toFixed(2) || "191.44"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Price Line Items Table */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
+                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-slate-900">Role-Based Effort & Commercial Breakdown</h3>
+                  <span className="text-xs font-semibold text-slate-500">
+                    Currency: {pricing.currency || "EUR"}
+                  </span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                      <tr>
+                        <th className="py-3 px-4">Role Title</th>
+                        <th className="py-3 px-4 text-right">Hours</th>
+                        <th className="py-3 px-4 text-right">Days</th>
+                        <th className="py-3 px-4 text-right">Daily Rate</th>
+                        <th className="py-3 px-4 text-right">Base Cost</th>
+                        <th className="py-3 px-4 text-right">Line Total (Inc. Margin)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {(pricing.price_sheet?.line_items || pricing.price_sheet?.lines || []).map(
+                        (line, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50/80 transition">
+                            <td className="py-3 px-4 font-semibold text-slate-900">
+                              {line.role_title}
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium text-slate-600">
+                              {line.hours}h
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium text-slate-600">
+                              {line.days}d
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium text-slate-600">
+                              €{line.daily_rate?.toFixed(2)}
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium text-slate-600">
+                              €{line.base_cost?.toLocaleString()}
+                            </td>
+                            <td className="py-3 px-4 text-right font-bold text-slate-900">
+                              €{line.line_total?.toLocaleString()}
+                            </td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Assumptions */}
+              {pricing.price_sheet?.assumptions && (
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-2">
+                  <h4 className="text-xs font-bold text-slate-900">Commercial Assumptions & Terms</h4>
+                  <ul className="space-y-1 text-xs text-slate-600">
+                    {pricing.price_sheet.assumptions.map((a, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">&bull;</span>
+                        <span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

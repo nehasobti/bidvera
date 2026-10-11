@@ -34,6 +34,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
 
     outline = [
         {
+            "id": "sec-001",
             "section_number": 1,
             "title": "Executive Summary & Bidder Qualifications",
             "description": "Executive overview of the proposal, corporate background, and eligibility proof.",
@@ -41,6 +42,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
             "word_limit": 600,
         },
         {
+            "id": "sec-002",
             "section_number": 2,
             "title": "Technical Architecture & Transformation Strategy",
             "description": "Proposed system topology, workload migration phases, and zero-downtime cutover plan.",
@@ -48,6 +50,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
             "word_limit": 1500,
         },
         {
+            "id": "sec-003",
             "section_number": 3,
             "title": "Information Security, Governance & Regulatory Compliance",
             "description": "ISO 27001 ISMS policies, CIS Benchmark Level 2 controls, data encryption, and GDPR compliance.",
@@ -55,6 +58,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
             "word_limit": 1000,
         },
         {
+            "id": "sec-004",
             "section_number": 4,
             "title": "DevOps Automation, Container Platform & GitOps Delivery",
             "description": "Amazon EKS container ecosystem, ArgoCD GitOps deployment manifests, and observability.",
@@ -62,6 +66,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
             "word_limit": 1000,
         },
         {
+            "id": "sec-005",
             "section_number": 5,
             "title": "Project Governance, SLA Commitments & Hypercare Support",
             "description": "Team staffing model, agile delivery cadence, 15-minute P1 incident response, and hypercare.",
@@ -69,6 +74,7 @@ async def plan_outline_node(state: BidState) -> dict[str, Any]:
             "word_limit": 800,
         },
         {
+            "id": "sec-006",
             "section_number": 6,
             "title": "Comprehensive Compliance Matrix & Verification Declarations",
             "description": "Traceability matrix mapping every mandatory and scored RFP requirement to proposal evidence.",
