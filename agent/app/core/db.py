@@ -59,6 +59,19 @@ class PersistentDiskSaver(MemorySaver):
         except Exception as e:
             logger.warning(f"Could not save checkpoints to {self.file_path}: {e}")
 
+    def delete_thread(self, thread_id: str) -> None:
+        """Remove all checkpoints and state writes associated with a thread ID."""
+        to_del_storage = [k for k in list(self.storage.keys()) if str(k) == thread_id or (isinstance(k, tuple) and str(k[0]) == thread_id)]
+        for k in to_del_storage:
+            self.storage.pop(k, None)
+
+        to_del_writes = [k for k in list(self.writes.keys()) if str(k) == thread_id or (isinstance(k, tuple) and str(k[0]) == thread_id)]
+        for k in to_del_writes:
+            self.writes.pop(k, None)
+
+        self._save_to_disk()
+        logger.info(f"Deleted checkpoints for thread {thread_id}")
+
     def put(
         self,
         config: dict[str, Any],

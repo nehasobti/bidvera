@@ -379,3 +379,40 @@ async def execute_bid_task(bid_id: str, req: ExecuteTaskRequest) -> dict[str, An
     return result
 
 
+@router.delete("/{bid_id}")
+async def delete_bid(bid_id: str) -> dict[str, Any]:
+    """Delete a bid thread, its persistent checkpoints, and generated artifacts."""
+    from agent.app.core.db import get_checkpointer
+
+    registry = _load_registry()
+    config = {"configurable": {"thread_id": bid_id}}
+    snapshot = bid_graph.get_state(config)
+
+    if bid_id not in registry and (not snapshot or not snapshot.values):
+        raise HTTPException(status_code=404, detail=f"Bid thread '{bid_id}' not found.")
+
+    # 1. Remove from registry
+    if bid_id in registry:
+        del registry[bid_id]
+        _save_registry(registry)
+
+    # 2. Remove checkpoints from disk checkpointer
+    checkpointer = get_checkpointer()
+    if hasattr(checkpointer, "delete_thread"):
+        checkpointer.delete_thread(bid_id)
+
+    # 3. Clean up generated artifacts
+    for p in Path("output/documents").glob(f"Proposal_{bid_id}_*"):
+        try:
+            p.unlink()
+        except Exception:
+            pass
+
+    return {
+        "success": True,
+        "bid_id": bid_id,
+        "message": f"Bid '{bid_id}' successfully deleted.",
+    }
+
+
+

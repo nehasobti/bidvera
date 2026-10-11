@@ -35,7 +35,7 @@ class TaskAgent:
         state_values = snapshot.values if snapshot else {}
 
         if action in ("qa", "ask_tender"):
-            return await self._handle_tender_qa(state_values, params.get("query", ""))
+            return await self._handle_tender_qa(bid_id, state_values, params.get("query", ""))
         elif action in ("redraft", "redraft_section"):
             return await self._handle_redraft_section(
                 bid_id,
@@ -60,14 +60,17 @@ class TaskAgent:
                 params.get("requirement_text", ""),
                 params.get("section_content", ""),
             )
+        elif action in ("delete", "delete_bid"):
+            return await self._handle_delete_bid(bid_id)
         else:
             return {
                 "success": False,
-                "error": f"Unknown task action '{action}'. Supported: qa, redraft_section, lookup_evidence, adjust_pricing, verify_compliance",
+                "error": f"Unknown task action '{action}'. Supported: qa, redraft_section, lookup_evidence, adjust_pricing, verify_compliance, delete_bid",
             }
 
     async def _handle_tender_qa(
         self,
+        bid_id: str,
         state_values: dict[str, Any],
         query: str,
     ) -> dict[str, Any]:
@@ -86,6 +89,11 @@ class TaskAgent:
             r_text = req.get("text", "").lower()
             if any(term in r_text for term in q_lower.split() if len(term) > 3):
                 matched_reqs.append(req)
+
+        # Check if user asked to delete the bid
+        if any(term in q_lower for term in ("delete", "remove this bid", "delete it", "trash")):
+            target_bid = bid_info.get("id") or bid_id or "bid-current"
+            return await self._handle_delete_bid(target_bid)
 
         # Build citation and answer
         answer = ""
@@ -281,6 +289,24 @@ class TaskAgent:
             "matched_keywords": list(overlap),
         }
 
+    async def _handle_delete_bid(self, bid_id: str) -> dict[str, Any]:
+        """Delete bid from registry, disk checkpoints, and artifacts."""
+        from agent.app.api.bids import delete_bid
+
+        try:
+            await delete_bid(bid_id)
+            return {
+                "success": True,
+                "action": "delete_bid",
+                "deleted": True,
+                "bid_id": bid_id,
+                "redirect": "/bids",
+                "answer": f"Bid '{bid_id}' has been permanently deleted from the workspace. Redirecting to active bids...",
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Failed to delete bid '{bid_id}': {e}"}
+
 
 # Singleton agent instance
 task_agent = TaskAgent()
+

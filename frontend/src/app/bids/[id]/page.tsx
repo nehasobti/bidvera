@@ -2,7 +2,8 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { fetchBid, submitBidDecision, executeBidTask } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { fetchBid, submitBidDecision, executeBidTask, deleteBid } from "@/lib/api";
 import { formatDate } from "@/lib/date";
 import {
   BidRecord,
@@ -44,15 +45,20 @@ import {
   RefreshCw,
   Search,
   X,
+  Trash2,
 } from "lucide-react";
 
 export default function BidWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const bidId = resolvedParams.id;
 
   const [bid, setBid] = useState<BidRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const [activeTab, setActiveTab] = useState<
     | "timeline"
     | "requirements"
@@ -112,6 +118,14 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
           citations: res.citations || [],
         },
       ]);
+      if (res.action === "delete_bid" || res.deleted || res.redirect === "/bids") {
+        setTimeout(() => {
+          router.push("/bids");
+          if (typeof window !== "undefined") {
+            window.location.href = "/bids";
+          }
+        }, 1200);
+      }
     } catch (err: any) {
       setChatMessages((prev) => [
         ...prev,
@@ -124,6 +138,22 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
       setChatLoading(false);
     }
   };
+
+  const handleDeleteBid = async () => {
+    try {
+      setDeleting(true);
+      await deleteBid(bidId);
+      router.push("/bids");
+      if (typeof window !== "undefined") {
+        window.location.href = "/bids";
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to delete bid thread");
+      setDeleting(false);
+      setDeleteConfirmOpen(false);
+    }
+  };
+
 
 
 
@@ -320,10 +350,10 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </a>
               </div>
             ) : (
-              <div className="text-right">
-                <span className="text-[10px] text-slate-400 font-semibold uppercase block">Qualification</span>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-1.5">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Qualification:</span>
                 <span
-                  className={`font-extrabold px-3 py-1 rounded-md text-xs uppercase ${
+                  className={`font-extrabold px-2.5 py-0.5 rounded-lg text-xs uppercase ${
                     eligibility?.recommendation === "bid"
                       ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                       : "bg-amber-100 text-amber-800 border border-amber-300"
@@ -333,6 +363,15 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </span>
               </div>
             )}
+
+            <button
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200/80 rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+              title="Delete this bid thread"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Delete Bid</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1570,6 +1609,13 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 {q}
               </button>
             ))}
+            <button
+              onClick={() => handleSendChatMessage("delete this bid")}
+              className="whitespace-nowrap px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-medium transition cursor-pointer flex items-center gap-1"
+            >
+              <Trash2 className="w-2.5 h-2.5" />
+              <span>Delete this bid</span>
+            </button>
           </div>
 
           {/* Messages Scroll Area */}
@@ -1631,6 +1677,53 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
             >
               <Send className="w-4 h-4" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1">
+              <h3 className="text-base font-bold text-slate-900">Delete this Bid Workspace?</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Are you sure you want to delete <span className="font-mono font-semibold text-slate-700">{bidId}</span>? All checkpoints, drafted sections, compliance records, and exported artifacts will be permanently purged.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmOpen(false)}
+                disabled={deleting}
+                className="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-50 transition cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteBid}
+                disabled={deleting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                {deleting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Confirm Delete</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
