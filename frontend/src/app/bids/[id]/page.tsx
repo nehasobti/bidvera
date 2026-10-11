@@ -43,6 +43,7 @@ import {
   HelpCircle,
   RefreshCw,
   Search,
+  X,
 } from "lucide-react";
 
 export default function BidWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -80,6 +81,50 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
   const [taskLoading, setTaskLoading] = useState(false);
   const [taskResult, setTaskResult] = useState<any | null>(null);
   const [taskError, setTaskError] = useState<string | null>(null);
+
+  // Floating Chat Drawer State
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<
+    Array<{ sender: "user" | "agent"; text: string; citations?: string[] }>
+  >([
+    {
+      sender: "agent",
+      text: "Hello! I am your Bidvera Copilot. Ask me anything about this RFP (e.g. availability SLA, penalty clauses, eligibility thresholds, or corporate credentials).",
+    },
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+
+  const handleSendChatMessage = async (presetText?: string) => {
+    const textToSend = presetText || chatInput;
+    if (!textToSend.trim() || chatLoading) return;
+    setChatInput("");
+    setChatMessages((prev) => [...prev, { sender: "user", text: textToSend }]);
+    setChatLoading(true);
+
+    try {
+      const res = await executeBidTask(bidId, "qa", { query: textToSend });
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "agent",
+          text: res.answer || "No matching requirement found for this query.",
+          citations: res.citations || [],
+        },
+      ]);
+    } catch (err: any) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          sender: "agent",
+          text: `Error: ${err.message || "Failed to process query"}`,
+        },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
 
 
   const loadBidData = async () => {
@@ -1472,6 +1517,124 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
           )}
         </div>
       )}
+
+      {/* Floating Chat Agent Trigger Button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setChatDrawerOpen(!chatDrawerOpen)}
+          className="flex items-center gap-2.5 px-5 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-xl shadow-blue-500/30 font-bold text-xs transition cursor-pointer border-2 border-white/20 active:scale-95"
+        >
+          <Bot className="w-5 h-5" />
+          <span>Ask Tender Copilot</span>
+          {chatDrawerOpen ? <X className="w-4 h-4 ml-1" /> : <Sparkles className="w-4 h-4 text-amber-300 ml-1" />}
+        </button>
+      </div>
+
+      {/* Floating Chat Drawer Modal */}
+      {chatDrawerOpen && (
+        <div className="fixed bottom-22 right-6 z-50 w-96 max-w-[calc(100vw-2rem)] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+          {/* Header */}
+          <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold">
+                <Bot className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold leading-tight">Bidvera Tender Copilot</h4>
+                <p className="text-[10px] text-slate-400 truncate max-w-[200px]">
+                  {bid?.bid?.title || bid?.tender_id}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setChatDrawerOpen(false)}
+              className="text-slate-400 hover:text-white p-1 rounded-lg transition cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Quick Questions Header */}
+          <div className="px-3 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto text-[10px]">
+            <span className="text-slate-400 font-semibold flex-shrink-0">Quick Ask:</span>
+            {[
+              "What is the availability SLA?",
+              "What are the penalty clauses?",
+              "What turnover is required?",
+            ].map((q, qIdx) => (
+              <button
+                key={qIdx}
+                onClick={() => handleSendChatMessage(q)}
+                className="whitespace-nowrap px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium transition cursor-pointer"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+
+          {/* Messages Scroll Area */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/50">
+            {chatMessages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
+                    msg.sender === "user"
+                      ? "bg-blue-600 text-white font-medium"
+                      : "bg-white text-slate-800 border border-slate-200 shadow-2xs"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                  {/* Document Citations */}
+                  {msg.citations && msg.citations.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-slate-100 flex flex-wrap gap-1">
+                      <span className="text-[9px] font-bold text-slate-400">Ref:</span>
+                      {msg.citations.map((cite, cIdx) => (
+                        <span
+                          key={cIdx}
+                          className="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200"
+                        >
+                          {cite}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {chatLoading && (
+              <div className="flex items-center gap-2 text-slate-500 text-xs bg-white p-3 rounded-2xl border border-slate-200 w-fit">
+                <div className="w-3.5 h-3.5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <span className="text-[11px] font-semibold">Tender Copilot analyzing document...</span>
+              </div>
+            )}
+          </div>
+
+          {/* Input Footer */}
+          <div className="p-3 bg-white border-t border-slate-200 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSendChatMessage()}
+              placeholder="Ask anything about this RFP..."
+              className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => handleSendChatMessage()}
+              disabled={chatLoading || !chatInput.trim()}
+              className="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition disabled:opacity-50 cursor-pointer"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
