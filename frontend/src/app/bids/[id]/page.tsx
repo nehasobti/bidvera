@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { fetchBid, submitBidDecision } from "@/lib/api";
+import { fetchBid, submitBidDecision, executeBidTask } from "@/lib/api";
 import { formatDate } from "@/lib/date";
 import {
   BidRecord,
@@ -37,6 +37,12 @@ import {
   Award,
   Sparkles,
   ExternalLink,
+  Bot,
+  Send,
+  MessageSquare,
+  HelpCircle,
+  RefreshCw,
+  Search,
 } from "lucide-react";
 
 export default function BidWorkspacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -56,9 +62,25 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
     | "compliance"
     | "review"
     | "artifacts"
+    | "copilot"
   >("timeline");
   const [decisionSubmitting, setDecisionSubmitting] = useState(false);
   const [comment, setComment] = useState("");
+
+  // Copilot Task Agent State
+  const [taskAction, setTaskAction] = useState<
+    "qa" | "redraft_section" | "lookup_evidence" | "adjust_pricing" | "verify_compliance"
+  >("qa");
+  const [taskQuery, setTaskQuery] = useState("");
+  const [taskSectionId, setTaskSectionId] = useState("");
+  const [taskCategory, setTaskCategory] = useState("general");
+  const [taskDiscount, setTaskDiscount] = useState(10);
+  const [taskCompReq, setTaskCompReq] = useState("");
+  const [taskCompSec, setTaskCompSec] = useState("");
+  const [taskLoading, setTaskLoading] = useState(false);
+  const [taskResult, setTaskResult] = useState<any | null>(null);
+  const [taskError, setTaskError] = useState<string | null>(null);
+
 
   const loadBidData = async () => {
     try {
@@ -88,6 +110,37 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
       setError(err.message || "Failed to submit decision");
     } finally {
       setDecisionSubmitting(false);
+    }
+  };
+
+  const handleExecuteTask = async (customAction?: string, customParams?: any) => {
+    try {
+      setTaskLoading(true);
+      setTaskError(null);
+      const action = customAction || taskAction;
+      let params: any = customParams || {};
+
+      if (!customParams) {
+        if (action === "qa") {
+          params = { query: taskQuery };
+        } else if (action === "redraft_section") {
+          params = { section_id: taskSectionId, instructions: taskQuery };
+        } else if (action === "lookup_evidence") {
+          params = { query: taskQuery, category: taskCategory };
+        } else if (action === "adjust_pricing") {
+          params = { discount_pct: taskDiscount, rate_card_currency: "EUR" };
+        } else if (action === "verify_compliance") {
+          params = { requirement_text: taskCompReq, section_content: taskCompSec };
+        }
+      }
+
+      const res = await executeBidTask(bidId, action, params);
+      setTaskResult(res);
+      await loadBidData();
+    } catch (err: any) {
+      setTaskError(err.message || "Failed to execute agent task");
+    } finally {
+      setTaskLoading(false);
     }
   };
 
@@ -304,6 +357,7 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
       <div className="border-b border-slate-200 flex gap-6 text-xs font-bold overflow-x-auto">
         {[
           { key: "timeline", label: "Execution Timeline", icon: Layers },
+          { key: "copilot", label: "Agent Copilot & Tasks", icon: Bot },
           { key: "requirements", label: `Requirements (${requirements.length})`, icon: ListOrdered },
           { key: "eligibility", label: "Corporate Qualification", icon: ShieldCheck },
           { key: "outline", label: `Outline (${outline.length})`, icon: FileText },
@@ -433,6 +487,415 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Copilot & Tasks */}
+      {activeTab === "copilot" && (
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <Bot className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <span>Bid Copilot & Autonomous Task Agent</span>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                      Active
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Execute on-demand tasks across tender analysis, section editing, company knowledge, and pricing.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Reset */}
+              {taskResult && (
+                <button
+                  onClick={() => {
+                    setTaskResult(null);
+                    setTaskError(null);
+                  }}
+                  className="text-xs text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Clear Result</span>
+                </button>
+              )}
+            </div>
+
+            {/* Task Type Switcher */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: "qa", label: "💬 Tender Q&A", desc: "Ask questions with page citations" },
+                { id: "redraft_section", label: "✍️ Re-draft Section", desc: "Polish draft with reviewer guidance" },
+                { id: "lookup_evidence", label: "🔍 Evidence Lookup", desc: "Query company knowledge & certs" },
+                { id: "adjust_pricing", label: "💶 Pricing Simulation", desc: "What-if commercial discount scenarios" },
+                { id: "verify_compliance", label: "🛡️ Compliance Check", desc: "Score requirement alignment" },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setTaskAction(item.id as any);
+                    setTaskResult(null);
+                    setTaskError(null);
+                  }}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    taskAction === item.id
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Dynamic Input Form based on Action */}
+            <div className="space-y-4 pt-2">
+              {taskAction === "qa" && (
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-slate-700 block">
+                    Ask a Question About the Tender Document:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={taskQuery}
+                      onChange={(e) => setTaskQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleExecuteTask()}
+                      placeholder="e.g. What is the mandatory availability SLA and penalty clause?"
+                      className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={() => handleExecuteTask()}
+                      disabled={taskLoading || !taskQuery.trim()}
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition disabled:opacity-50 cursor-pointer"
+                    >
+                      {taskLoading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Send className="w-3.5 h-3.5" />
+                      )}
+                      <span>Ask Agent</span>
+                    </button>
+                  </div>
+
+                  {/* Suggestion Chips */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <span className="text-[11px] text-slate-400 font-semibold">Suggested:</span>
+                    {[
+                      "What is the mandatory availability SLA?",
+                      "What penalty cap applies to migration downtime?",
+                      "What is the average annual turnover requirement?",
+                      "Which cloud partner tier is required?",
+                    ].map((sug, sIdx) => (
+                      <button
+                        key={sIdx}
+                        onClick={() => {
+                          setTaskQuery(sug);
+                          handleExecuteTask("qa", { query: sug });
+                        }}
+                        className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg transition cursor-pointer"
+                      >
+                        {sug}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {taskAction === "redraft_section" && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Target Proposal Section:
+                      </label>
+                      <select
+                        value={taskSectionId}
+                        onChange={(e) => setTaskSectionId(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select section to polish...</option>
+                        {sections.map((s, idx) => (
+                          <option key={s.section_id || idx} value={s.section_id || `sec-${idx + 1}`}>
+                            {s.title} ({s.word_count || 300} words)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Reviewer Guidance & Instructions:
+                      </label>
+                      <input
+                        type="text"
+                        value={taskQuery}
+                        onChange={(e) => setTaskQuery(e.target.value)}
+                        placeholder="e.g. Emphasize ISO 27001 accreditation and battle-tested zero-downtime cutover methodology."
+                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleExecuteTask()}
+                    disabled={taskLoading || !taskSectionId}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition disabled:opacity-50 cursor-pointer"
+                  >
+                    {taskLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3.5 h-3.5" />
+                    )}
+                    <span>Re-draft Section with Knowledge Grounding</span>
+                  </button>
+                </div>
+              )}
+
+              {taskAction === "lookup_evidence" && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Knowledge Category:
+                      </label>
+                      <select
+                        value={taskCategory}
+                        onChange={(e) => setTaskCategory(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none"
+                      >
+                        <option value="certifications">Accreditations & Certifications</option>
+                        <option value="case_studies">Enterprise Case Studies</option>
+                        <option value="cvs">Key Personnel CVs</option>
+                        <option value="profile">Corporate Financial Profile</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Keyword Filter (Optional):
+                      </label>
+                      <input
+                        type="text"
+                        value={taskQuery}
+                        onChange={(e) => setTaskQuery(e.target.value)}
+                        placeholder="e.g. AWS, ISO 27001, healthcare, banking"
+                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleExecuteTask()}
+                    disabled={taskLoading}
+                    className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  >
+                    {taskLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Search className="w-3.5 h-3.5" />
+                    )}
+                    <span>Query Company Knowledge MCP</span>
+                  </button>
+                </div>
+              )}
+
+              {taskAction === "adjust_pricing" && (
+                <div className="space-y-3">
+                  <div className="max-w-md space-y-2">
+                    <label className="text-xs font-bold text-slate-700 block">
+                      Target Scenario Discount: <span className="text-blue-600 font-extrabold">{taskDiscount}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="30"
+                      step="5"
+                      value={taskDiscount}
+                      onChange={(e) => setTaskDiscount(Number(e.target.value))}
+                      className="w-full accent-blue-600"
+                    />
+                    <div className="flex justify-between text-[11px] text-slate-400">
+                      <span>0% (Standard)</span>
+                      <span>15%</span>
+                      <span>30% (Max)</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleExecuteTask()}
+                    disabled={taskLoading}
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  >
+                    {taskLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Coins className="w-3.5 h-3.5" />
+                    )}
+                    <span>Compute Scenario Pricing</span>
+                  </button>
+                </div>
+              )}
+
+              {taskAction === "verify_compliance" && (
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 block">
+                      Requirement Statement:
+                    </label>
+                    <input
+                      type="text"
+                      value={taskCompReq}
+                      onChange={(e) => setTaskCompReq(e.target.value)}
+                      placeholder="e.g. Provide valid ISO/IEC 27001 accreditation and AWS Premier Tier partner status."
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-700 block">
+                      Proposed Section Statement:
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={taskCompSec}
+                      onChange={(e) => setTaskCompSec(e.target.value)}
+                      placeholder="e.g. Tychon Software maintains active ISO 27001 accreditation through 2027 and is an audited AWS Premier Tier partner."
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleExecuteTask()}
+                    disabled={taskLoading || !taskCompReq}
+                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  >
+                    {taskLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                    )}
+                    <span>Evaluate Compliance Alignment</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Error Display */}
+            {taskError && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
+                <span>{taskError}</span>
+              </div>
+            )}
+
+            {/* Output Display */}
+            {taskResult && (
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Agent Task Execution Output</span>
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-400">Action: {taskResult.action}</span>
+                </div>
+
+                {/* Q&A Output */}
+                {taskResult.action === "qa" && (
+                  <div className="space-y-3">
+                    <div className="text-xs sm:text-sm font-semibold text-slate-900 leading-relaxed">
+                      {taskResult.answer}
+                    </div>
+                    {taskResult.citations && taskResult.citations.length > 0 && (
+                      <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] font-bold text-slate-500">Document Citations:</span>
+                        {taskResult.citations.map((cite: string, idx: number) => (
+                          <span
+                            key={idx}
+                            className="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-md text-[10px] font-bold"
+                          >
+                            {cite}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Re-draft Output */}
+                {taskResult.action === "redraft_section" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                        Section Revised & Persisted ({taskResult.word_count} words)
+                      </span>
+                      <span className="text-xs font-semibold text-slate-700">{taskResult.title}</span>
+                    </div>
+                    <div className="text-xs text-slate-800 whitespace-pre-wrap bg-white p-4 rounded-xl border border-slate-200 font-sans leading-relaxed">
+                      {taskResult.content}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pricing Simulation Output */}
+                {taskResult.action === "adjust_pricing" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                      <div className="text-[11px] text-slate-400 font-medium">Standard Price</div>
+                      <div className="text-base font-extrabold text-slate-900 mt-0.5">
+                        €{taskResult.original_price?.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                      <div className="text-[11px] text-emerald-600 font-medium">
+                        Scenario ({taskResult.discount_pct}% Discount)
+                      </div>
+                      <div className="text-base font-extrabold text-emerald-700 mt-0.5">
+                        €{taskResult.scenario_price?.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                      <div className="text-[11px] text-blue-600 font-medium">Client Savings</div>
+                      <div className="text-base font-extrabold text-blue-700 mt-0.5">
+                        €{taskResult.savings?.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Compliance Output */}
+                {taskResult.action === "verify_compliance" && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs font-bold px-2.5 py-1 rounded-md ${
+                          taskResult.status === "Compliant"
+                            ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                            : "bg-amber-100 text-amber-800 border border-amber-300"
+                        }`}
+                      >
+                        {taskResult.status}
+                      </span>
+                      <span className="text-xs text-slate-600">
+                        Confidence Score: <strong>{(taskResult.compliance_score * 100).toFixed(0)}%</strong>
+                      </span>
+                    </div>
+                    {taskResult.matched_keywords && (
+                      <div className="text-[11px] text-slate-500 pt-1">
+                        Matched Alignment Terms: {taskResult.matched_keywords.join(", ")}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Evidence Lookup Output */}
+                {taskResult.action === "lookup_evidence" && (
+                  <div className="text-xs text-slate-700 font-mono bg-white p-3 rounded-xl border border-slate-200 max-h-60 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap">{JSON.stringify(taskResult.result, null, 2)}</pre>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -630,12 +1093,38 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
                       <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-md">
                         {sec.word_count || sec.content.split(" ").length} words
                       </span>
+                      <button
+                        onClick={() => {
+                          setTaskAction("redraft_section");
+                          setTaskSectionId(sec.section_id || `sec-${idx + 1}`);
+                          setTaskQuery("Emphasize ISO 27001 accreditation, tighten executive tone, and cite verified case study metrics.");
+                          setActiveTab("copilot");
+                        }}
+                        className="flex items-center gap-1 text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition cursor-pointer"
+                      >
+                        <Bot className="w-3.5 h-3.5" />
+                        <span>Re-draft with Copilot</span>
+                      </button>
                     </div>
                   </div>
 
                   <div className="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-sans space-y-2">
                     {sec.content}
                   </div>
+
+                  {sec.citations && sec.citations.length > 0 && (
+                    <div className="pt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
+                      <span className="font-semibold text-slate-700">Verified Evidence Citations:</span>
+                      {sec.citations.map((cite: string, cIdx: number) => (
+                        <span
+                          key={cIdx}
+                          className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-medium"
+                        >
+                          {cite}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
                   {sec.mapped_requirements && sec.mapped_requirements.length > 0 && (
                     <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">

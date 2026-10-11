@@ -59,8 +59,11 @@ export interface DraftedSection {
   content: string;
   mapped_requirements: string[];
   word_count?: number;
+  citations?: string[];
+  revision_notes?: string;
   status?: string;
 }
+
 
 export interface PriceLineItem {
   role_key: string;

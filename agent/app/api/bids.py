@@ -347,3 +347,35 @@ async def download_proposal_artifact(bid_id: str, file_format: str):
         filename=Path(file_path_str).name,
     )
 
+
+class ExecuteTaskRequest(BaseModel):
+    """Payload to request an on-demand copilot action or workspace task."""
+
+    action: str = Field(
+        description="Action type: 'qa', 'redraft_section', 'lookup_evidence', 'adjust_pricing', 'verify_compliance'"
+    )
+    params: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Action-specific parameters (e.g. query, section_id, instructions, discount_pct)",
+    )
+
+
+@router.post("/{bid_id}/tasks")
+@router.post("/{bid_id}/copilot")
+async def execute_bid_task(bid_id: str, req: ExecuteTaskRequest) -> dict[str, Any]:
+    """Execute an on-demand copilot action or workspace task."""
+    from agent.app.agents.task_agent import task_agent
+
+    result = await task_agent.execute(
+        bid_id=bid_id,
+        action=req.action,
+        params=req.params,
+    )
+    if not result.get("success", False):
+        raise HTTPException(
+            status_code=400,
+            detail=result.get("error", "Task execution failed"),
+        )
+    return result
+
+

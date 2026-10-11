@@ -1,7 +1,7 @@
 # Bidvera Evaluation Benchmark Report
 
 **Suite:** `QUICK`  
-**Date:** 2026-10-11 19:12:24  
+**Date:** 2026-10-11 20:00:18  
 **Status:** ALL TARGETS SATISFIED
 
 ---
@@ -24,7 +24,7 @@
 
 | Tender ID | Requirements Extracted | Recall | Precision | Coverage | Citations | Duration (s) |
 |---|---|---|---|---|---|---|
-| `tender-001` | 6 | 1.0 | 1.0 | 1.0 | 1.0 | 0.22s |
+| `tender-001` | 6 | 1.0 | 1.0 | 1.0 | 1.0 | 0.64s |
 
 ---
 
