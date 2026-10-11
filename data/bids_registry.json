@@ -1,0 +1,82 @@
+{
+  "bid-ae3b0405": {
+    "bid_id": "bid-ae3b0405",
+    "tender_id": "tender-001",
+    "title": "tender-001"
+  },
+  "bid-95116a2d": {
+    "bid_id": "bid-95116a2d",
+    "tender_id": "tender-003",
+    "title": "tender-003"
+  },
+  "bid-486de82a": {
+    "bid_id": "bid-486de82a",
+    "tender_id": "tender-001",
+    "title": "tender-001"
+  },
+  "bid-8ae151f1": {
+    "bid_id": "bid-8ae151f1",
+    "tender_id": "tender-001",
+    "title": "tender-001"
+  },
+  "bid-1d2bc726": {
+    "bid_id": "bid-1d2bc726",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-a00f088e": {
+    "bid_id": "bid-a00f088e",
+    "tender_id": "tender-003",
+    "title": "Core Banking Microservices Modernization"
+  },
+  "bid-e1b767e5": {
+    "bid_id": "bid-e1b767e5",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-50b72897": {
+    "bid_id": "bid-50b72897",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-cfcbd4a0": {
+    "bid_id": "bid-cfcbd4a0",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-3b336399": {
+    "bid_id": "bid-3b336399",
+    "tender_id": "tender-003",
+    "title": "Core Banking Microservices Modernization"
+  },
+  "bid-76babc87": {
+    "bid_id": "bid-76babc87",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-c0cc0f4c": {
+    "bid_id": "bid-c0cc0f4c",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-40ddc069": {
+    "bid_id": "bid-40ddc069",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-a998d699": {
+    "bid_id": "bid-a998d699",
+    "tender_id": "tender-003",
+    "title": "Core Banking Microservices Modernization"
+  },
+  "bid-fdc3bc63": {
+    "bid_id": "bid-fdc3bc63",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  },
+  "bid-e411a4fe": {
+    "bid_id": "bid-e411a4fe",
+    "tender_id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure"
+  }
+}

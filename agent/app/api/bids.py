@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from pathlib import Path
 from typing import Any
 from fastapi import APIRouter, HTTPException
 from langgraph.types import Command
@@ -14,8 +15,30 @@ from agent.app.graph.main_graph import bid_graph
 
 router = APIRouter(prefix="/bids", tags=["bids"])
 
-# In-memory registry of thread IDs for quick listing
-BIDS_REGISTRY: dict[str, dict[str, Any]] = {}
+# Persistent registry of thread IDs stored in data/bids_registry.json
+REGISTRY_FILE = Path.cwd() / "data" / "bids_registry.json"
+
+
+def _load_registry() -> dict[str, dict[str, Any]]:
+    if REGISTRY_FILE.exists():
+        try:
+            with open(REGISTRY_FILE, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_registry(reg: dict[str, dict[str, Any]]) -> None:
+    REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(REGISTRY_FILE, "w", encoding="utf-8") as f:
+            json.dump(reg, f, indent=2)
+    except Exception:
+        pass
+
+
+BIDS_REGISTRY: dict[str, dict[str, Any]] = _load_registry()
 
 
 class StartBidRequest(BaseModel):
@@ -37,8 +60,9 @@ class SubmitDecisionRequest(BaseModel):
 @router.get("/")
 async def list_bids() -> list[dict[str, Any]]:
     """List all tracked bids with their current status and progress."""
+    registry = _load_registry()
     results: list[dict[str, Any]] = []
-    for bid_id, meta in list(BIDS_REGISTRY.items()):
+    for bid_id, meta in list(registry.items()):
         config = {"configurable": {"thread_id": bid_id}}
         snapshot = bid_graph.get_state(config)
         if snapshot and snapshot.values:
@@ -66,7 +90,8 @@ async def list_bids() -> list[dict[str, Any]]:
 async def get_approvals_inbox() -> list[dict[str, Any]]:
     """Inbox returning all bids currently paused waiting for human checkpoint decisions."""
     inbox: list[dict[str, Any]] = []
-    for bid_id, meta in list(BIDS_REGISTRY.items()):
+    registry = _load_registry()
+    for bid_id, meta in list(registry.items()):
         config = {"configurable": {"thread_id": bid_id}}
         snapshot = bid_graph.get_state(config)
         if snapshot and snapshot.tasks:
@@ -110,11 +135,13 @@ async def start_bid(req: StartBidRequest) -> dict[str, Any]:
     }
 
     config = {"configurable": {"thread_id": bid_id}}
-    BIDS_REGISTRY[bid_id] = {
+    registry = _load_registry()
+    registry[bid_id] = {
         "bid_id": bid_id,
         "tender_id": req.tender_id,
         "title": req.tender_id,
     }
+    _save_registry(registry)
 
     # Execute graph up to interrupt checkpoint
     result = await bid_graph.ainvoke(initial_state, config=config)
@@ -125,7 +152,8 @@ async def start_bid(req: StartBidRequest) -> dict[str, Any]:
 
     # Update registry with actual title
     if "bid" in result and "title" in result["bid"]:
-        BIDS_REGISTRY[bid_id]["title"] = result["bid"]["title"]
+        registry[bid_id]["title"] = result["bid"]["title"]
+        _save_registry(registry)
 
     return {
         "bid_id": bid_id,

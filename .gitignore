@@ -46,3 +46,11 @@ htmlcov/
 node_modules/
 .next/
 out/
+
+# Output and runtime databases
+output/documents/*.docx
+output/documents/*.pdf
+data/*.db
+data/*.pkl
+data/*.tmp
+

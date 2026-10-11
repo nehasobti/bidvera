@@ -52,3 +52,49 @@ async def test_checkpoint_resume_across_instances():
     # Resume/continue with new input without re-running from scratch
     updated_state = await graph_instance_2.ainvoke(None, config=config)
     assert updated_state["status"] == "eligibility_checked"
+
+
+@pytest.mark.asyncio
+async def test_persistent_disk_saver_reloads_from_disk(tmp_path):
+    from agent.app.core.db import PersistentDiskSaver
+
+    checkpoint_file = tmp_path / "checkpoints_test.pkl"
+    saver_1 = PersistentDiskSaver(file_path=checkpoint_file)
+    thread_id = "test-disk-thread-01"
+    config = {"configurable": {"thread_id": thread_id}}
+
+    graph_1 = create_bid_graph(checkpointer=saver_1)
+    initial_state = {
+        "bid": {
+            "id": thread_id,
+            "tender_id": "tender-001",
+            "status": "created",
+        },
+        "documents": [],
+        "requirements": [],
+        "eligibility": {},
+        "decisions": [],
+        "outline": [],
+        "sections": [],
+        "pricing": {},
+        "review": {},
+        "compliance_matrix": [],
+        "artifacts": {},
+        "status": "created",
+        "error": None,
+    }
+
+    result = await graph_1.ainvoke(initial_state, config=config)
+    assert result["status"] == "eligibility_checked"
+    assert checkpoint_file.exists()
+
+    # Re-instantiate saver pointing to same file path (simulating app restart)
+    saver_2 = PersistentDiskSaver(file_path=checkpoint_file)
+    graph_2 = create_bid_graph(checkpointer=saver_2)
+
+    snapshot = graph_2.get_state(config)
+    assert snapshot is not None
+    assert snapshot.values["bid"]["id"] == thread_id
+    assert snapshot.values["status"] == "eligibility_checked"
+    assert len(snapshot.values["requirements"]) > 0
+

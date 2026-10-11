@@ -49,3 +49,16 @@ This log records design decisions, trade-offs, and library choices made during t
   - `frontend/`
   - `evals/`
 - **Decision:** The workspace root houses `mcp-servers/`, `sample-data/`, `agent/`, and `evals/`, with `docker-compose.yml` orchestrating all services together.
+
+---
+
+## 7. Checkpoint State Persistence (`PersistentDiskSaver`)
+- **Context:** During development and local restarts, default in-memory savers lost active bid threads and checkpoints. However, asynchronous graph invocation (`ainvoke`/`astream`) combined with synchronous inspection (`get_state`) created compatibility issues with standard `SqliteSaver` (which only supports synchronous operations).
+- **Decision:** Implemented `PersistentDiskSaver`, inheriting from `MemorySaver` while persisting checkpoints to `data/checkpoints.pkl` and registry to `data/bids_registry.json`. This provides native sync and async compatibility, zero external database requirement for local testing, and full persistence across process restarts.
+
+---
+
+## 8. Evaluation Benchmark Suite & Guardrail Traps
+- **Context:** The system requires measurable verification of requirement recall, eligibility accuracy, grounding support, and prompt injection defense.
+- **Decision:** Created `evals/` benchmark suite with gold labels for 3 sample tenders, 30 Q&A benchmarks with exact page references, and 20 security trap cases. Includes CLI runner (`python -m evals.runner --suite quick|full`) outputting markdown reports.
+

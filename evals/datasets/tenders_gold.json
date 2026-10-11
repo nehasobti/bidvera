@@ -1,0 +1,166 @@
+{
+  "tender-001": {
+    "id": "tender-001",
+    "title": "Cloud Migration & Hybrid DevOps Infrastructure",
+    "buyer": "EuroRailways Digital GmbH",
+    "deadline": "2026-11-20T17:00:00Z",
+    "budget_eur": 2500000,
+    "eligibility_expected": {
+      "recommendation": "bid",
+      "met_count": 5,
+      "total_criteria": 5,
+      "reasons": [
+        "Turnover of €18.5M exceeds the €10M threshold",
+        "12 years in business satisfies the 8-year requirement",
+        "Active ISO 27001 accredited until 2027",
+        "Verified AWS Premier Tier Services Partner",
+        "Demonstrated migration experience exceeding 250 VMs"
+      ]
+    },
+    "requirements": [
+      {
+        "id": "REQ-001",
+        "text": "Bidders must have minimum €10M annual turnover and 8 years operational history",
+        "type": "mandatory",
+        "page_ref": "2",
+        "category": "eligibility",
+        "expected_section": "Executive Summary & Bidder Qualifications"
+      },
+      {
+        "id": "REQ-002",
+        "text": "Provide valid ISO/IEC 27001:2022 accreditation certificate",
+        "type": "mandatory",
+        "page_ref": "3",
+        "category": "compliance",
+        "expected_section": "Information Security, Governance & Regulatory Compliance"
+      },
+      {
+        "id": "REQ-003",
+        "text": "Achieve zero unplanned downtime during production database cutover",
+        "type": "mandatory",
+        "page_ref": "5",
+        "category": "technical",
+        "expected_section": "Technical Architecture & Transformation Strategy"
+      },
+      {
+        "id": "REQ-004",
+        "text": "Deploy automated Terraform landing zone with CIS Benchmark Level 2 compliance",
+        "type": "mandatory",
+        "page_ref": "7",
+        "category": "devops",
+        "expected_section": "DevOps Automation, Container Platform & GitOps Delivery"
+      },
+      {
+        "id": "REQ-005",
+        "text": "Implement ArgoCD GitOps pipelines on Amazon EKS with automated canary rollouts",
+        "type": "mandatory",
+        "page_ref": "8",
+        "category": "devops",
+        "expected_section": "DevOps Automation, Container Platform & GitOps Delivery"
+      },
+      {
+        "id": "REQ-006",
+        "text": "Provide 24/7 hypercare support with 15-minute P1 incident response time SLA",
+        "type": "mandatory",
+        "page_ref": "12",
+        "category": "operations",
+        "expected_section": "Project Governance, SLA Commitments & Hypercare Support"
+      }
+    ]
+  },
+  "tender-002": {
+    "id": "tender-002",
+    "title": "Enterprise Healthcare Data Lakehouse & AI Analytics",
+    "buyer": "National Health Consortium",
+    "deadline": "2026-12-05T18:00:00Z",
+    "budget_eur": 1950000,
+    "eligibility_expected": {
+      "recommendation": "bid",
+      "met_count": 4,
+      "total_criteria": 4,
+      "reasons": [
+        "Turnover of €18.5M (~₹165 Crore) exceeds ₹100 Crore requirement",
+        "Apollo Clinical Lakehouse case study proves 10M+ records experience",
+        "CMMI Maturity Level 3 active and verified",
+        "ISO 9001 and ISO 27001 accreditations active"
+      ]
+    },
+    "requirements": [
+      {
+        "id": "REQ-101",
+        "text": "Bidder must possess active ISO 27001 and CMMI Level 3 certifications",
+        "type": "mandatory",
+        "page_ref": "2",
+        "category": "compliance",
+        "expected_section": "Corporate Accreditations & Quality Standards"
+      },
+      {
+        "id": "REQ-102",
+        "text": "Streaming ingestion of FHIR/HL7 clinical messages with <= 5 sec latency",
+        "type": "mandatory",
+        "page_ref": "4",
+        "category": "technical",
+        "expected_section": "Data Lakehouse Architecture & Ingestion"
+      },
+      {
+        "id": "REQ-103",
+        "text": "Automated HIPAA and DISHA data tokenization & encryption at rest",
+        "type": "mandatory",
+        "page_ref": "6",
+        "category": "security",
+        "expected_section": "Data Governance, Security & Privacy"
+      },
+      {
+        "id": "REQ-104",
+        "text": "AI-based patient cohort risk stratification models with explainable metrics",
+        "type": "mandatory",
+        "page_ref": "8",
+        "category": "ai",
+        "expected_section": "Predictive AI & Analytics Engine"
+      }
+    ]
+  },
+  "tender-003": {
+    "id": "tender-003",
+    "title": "Core Banking Microservices Modernization",
+    "buyer": "Nordic Logistics & FinServices AB",
+    "deadline": "2026-11-30T16:00:00Z",
+    "budget_eur": 3200000,
+    "eligibility_expected": {
+      "recommendation": "bid",
+      "met_count": 3,
+      "total_criteria": 3,
+      "reasons": [
+        "Turnover of €18.5M exceeds the €12M threshold",
+        "Nordic FinTech payments decomposition case study validates domain competence",
+        "Active ISO 27001 accreditation verified"
+      ]
+    },
+    "requirements": [
+      {
+        "id": "REQ-201",
+        "text": "Minimum €12M turnover and proven financial microservices track record",
+        "type": "mandatory",
+        "page_ref": "2",
+        "category": "eligibility",
+        "expected_section": "Executive Qualifications & Banking Domain Experience"
+      },
+      {
+        "id": "REQ-202",
+        "text": "End-to-end mTLS encryption and PCI-DSS Level 1 compliant architecture",
+        "type": "mandatory",
+        "page_ref": "6",
+        "category": "security",
+        "expected_section": "PCI-DSS Compliance & Transaction Security"
+      },
+      {
+        "id": "REQ-203",
+        "text": "High-throughput Kafka streaming pipeline handling 10k transactions/sec",
+        "type": "mandatory",
+        "page_ref": "8",
+        "category": "architecture",
+        "expected_section": "Domain-Driven Architecture & Event-Driven Backbone"
+      }
+    ]
+  }
+}

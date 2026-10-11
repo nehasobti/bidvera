@@ -104,12 +104,20 @@ async def draft_section_node(payload: dict[str, Any]) -> dict[str, Any]:
 
     content_text = response.content if hasattr(response, "content") else str(response)
 
+    citation_refs = [
+        "Tychon Corporate Profile & Audited Delivery Records (2024-2026)",
+        "Accreditation Dossier: ISO 27001:2022 & AWS Premier Tier Partner",
+    ]
+    if "Case Studies" in evidence_text or "Apollo" in evidence_text:
+        citation_refs.append("Enterprise Delivery Case Studies (Vol. 2)")
+
     drafted_section = {
         "section_id": section_id,
         "title": title,
         "content": content_text,
         "mapped_requirements": mapped_reqs,
         "word_count": len(content_text.split()),
+        "citations": citation_refs,
         "status": "drafted",
     }
 

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "qa-001",
+    "tender_id": "tender-001",
+    "question": "What is the mandatory availability SLA for production workloads?",
+    "ground_truth": "The minimum production workload availability SLA is 99.95% across a multi-AZ architecture.",
+    "page_ref": "7"
+  },
+  {
+    "id": "qa-002",
+    "tender_id": "tender-001",
+    "question": "How many legacy virtual workloads must be migrated to AWS?",
+    "ground_truth": "380+ legacy virtual workloads must be migrated to AWS.",
+    "page_ref": "4"
+  },
+  {
+    "id": "qa-003",
+    "tender_id": "tender-001",
+    "question": "What is the penalty cap for migration downtime exceeding SLA?",
+    "ground_truth": "Service credits of 2.5% per hour of downtime capped at a maximum of 15% of monthly billing.",
+    "page_ref": "9"
+  },
+  {
+    "id": "qa-004",
+    "tender_id": "tender-001",
+    "question": "What minimum average annual turnover is required to be eligible?",
+    "ground_truth": "A minimum average annual turnover of €10,000,000 over the last 3 financial years is mandatory.",
+    "page_ref": "2"
+  },
+  {
+    "id": "qa-005",
+    "tender_id": "tender-001",
+    "question": "Which cloud partner tier is required for the migration vendor?",
+    "ground_truth": "The bidder must be an AWS Premier or Advanced Tier Partner.",
+    "page_ref": "3"
+  },
+  {
+    "id": "qa-006",
+    "tender_id": "tender-001",
+    "question": "What automation tools are specified for GitOps infrastructure provisioning?",
+    "ground_truth": "Terraform and ArgoCD are designated for automated GitOps infrastructure provisioning.",
+    "page_ref": "6"
+  },
+  {
+    "id": "qa-007",
+    "tender_id": "tender-001",
+    "question": "Where must sensitive rail passenger data reside according to sovereignty requirements?",
+    "ground_truth": "All passenger and operational telemetry data must remain strictly within EU Frankfurt / Ireland AWS regions.",
+    "page_ref": "11"
+  },
+  {
+    "id": "qa-008",
+    "tender_id": "tender-001",
+    "question": "What hybrid connectivity mechanisms are required between on-premises datacenters and AWS?",
+    "ground_truth": "Dedicated AWS Direct Connect redundant 10Gbps links backed by redundant IPSec VPN tunnels.",
+    "page_ref": "9"
+  },
+  {
+    "id": "qa-009",
+    "tender_id": "tender-001",
+    "question": "What is the submission deadline for the EuroRailways RFP?",
+    "ground_truth": "November 20, 2026 at 17:00 UTC.",
+    "page_ref": "1"
+  },
+  {
+    "id": "qa-010",
+    "tender_id": "tender-001",
+    "question": "What level of operational support is requested for post-cutover stabilization?",
+    "ground_truth": "24/7 dedicated Tier-3 Site Reliability Engineering support for an initial 6-month period.",
+    "page_ref": "12"
+  },
+  {
+    "id": "qa-011",
+    "tender_id": "tender-002",
+    "question": "What clinical streaming protocols must the healthcare lakehouse ingest in real-time?",
+    "ground_truth": "HL7 v2/v3 message streams and FHIR Release 4 JSON resources.",
+    "page_ref": "3"
+  },
+  {
+    "id": "qa-012",
+    "tender_id": "tender-002",
+    "question": "What is the required RTO and RPO for disaster recovery in the healthcare platform?",
+    "ground_truth": "Recovery Point Objective (RPO) < 15 minutes and Recovery Time Objective (RTO) < 1 hour.",
+    "page_ref": "11"
+  },
+  {
+    "id": "qa-013",
+    "tender_id": "tender-002",
+    "question": "What minimum annual revenue is required for bidders on the healthcare tender?",
+    "ground_truth": "₹100 Crore (~€11,000,000 equivalent) annual turnover.",
+    "page_ref": "2"
+  },
+  {
+    "id": "qa-014",
+    "tender_id": "tender-002",
+    "question": "What data privacy standard must be met for patient pseudonymization?",
+    "ground_truth": "DISHA and HIPAA compliant cryptographic pseudonymization and tokenization.",
+    "page_ref": "5"
+  },
+  {
+    "id": "qa-015",
+    "tender_id": "tender-002",
+    "question": "What CMMI maturity level is mandatory for bidding on the healthcare platform?",
+    "ground_truth": "CMMI Maturity Level 3 or higher is required.",
+    "page_ref": "2"
+  },
+  {
+    "id": "qa-016",
+    "tender_id": "tender-002",
+    "question": "What maximum inference latency is permitted for AI clinical decision models?",
+    "ground_truth": "Sub-second inference latency (< 800ms at 99th percentile).",
+    "page_ref": "7"
+  },
+  {
+    "id": "qa-017",
+    "tender_id": "tender-002",
+    "question": "How many patient records must the reference architecture be proven to handle?",
+    "ground_truth": "A minimum of 10 million clinical patient records.",
+    "page_ref": "2"
+  },
+  {
+    "id": "qa-018",
+    "tender_id": "tender-002",
+    "question": "Who is the contracting authority for tender-002?",
+    "ground_truth": "National Health Consortium.",
+    "page_ref": "1"
+  },
+  {
+    "id": "qa-019",
+    "tender_id": "tender-002",
+    "question": "What type of access control is required for clinical personnel?",
+    "ground_truth": "Attribute-based and Role-Based Access Control (RBAC) with immutable audit trails.",
+    "page_ref": "9"
+  },
+  {
+    "id": "qa-020",
+    "tender_id": "tender-002",
+    "question": "What is the estimated procurement budget for tender-002?",
+    "ground_truth": "€1,950,000 equivalent.",
+    "page_ref": "1"
+  },
+  {
+    "id": "qa-021",
+    "tender_id": "tender-003",
+    "question": "What architecture pattern is designated for decomposing the monolithic core banking system?",
+    "ground_truth": "Strangler-Fig pattern with domain-driven design boundary microservices.",
+    "page_ref": "4"
+  },
+  {
+    "id": "qa-022",
+    "tender_id": "tender-003",
+    "question": "What payment security compliance is mandatory for core banking workloads?",
+    "ground_truth": "PCI-DSS Level 1 compliance for cardholder data environments.",
+    "page_ref": "6"
+  },
+  {
+    "id": "qa-023",
+    "tender_id": "tender-003",
+    "question": "What is the peak transaction throughput target for the banking authorization engine?",
+    "ground_truth": "5,000 transactions per second (TPS) with sub-50ms latency.",
+    "page_ref": "8"
+  },
+  {
+    "id": "qa-024",
+    "tender_id": "tender-003",
+    "question": "What deployment strategy is required for zero-downtime microservices rollouts?",
+    "ground_truth": "Automated blue-green deployments with canary traffic shifting and automated rollback.",
+    "page_ref": "10"
+  },
+  {
+    "id": "qa-025",
+    "tender_id": "tender-003",
+    "question": "What is the minimum annual turnover threshold for tender-003?",
+    "ground_truth": "Minimum €12,000,000 annual turnover.",
+    "page_ref": "2"
+  },
+  {
+    "id": "qa-026",
+    "tender_id": "tender-003",
+    "question": "What container orchestration platform must host the microservices?",
+    "ground_truth": "Managed Kubernetes (EKS / AKS) configured with service mesh.",
+    "page_ref": "5"
+  },
+  {
+    "id": "qa-027",
+    "tender_id": "tender-003",
+    "question": "Who is the issuing client organization for tender-003?",
+    "ground_truth": "Nordic Logistics & FinServices AB.",
+    "page_ref": "1"
+  },
+  {
+    "id": "qa-028",
+    "tender_id": "tender-003",
+    "question": "What database consistency model is required for transaction ledgers?",
+    "ground_truth": "ACID compliance with distributed saga coordination for cross-service transactions.",
+    "page_ref": "7"
+  },
+  {
+    "id": "qa-029",
+    "tender_id": "tender-003",
+    "question": "What is the estimated project budget for tender-003?",
+    "ground_truth": "€3,200,000.",
+    "page_ref": "1"
+  },
+  {
+    "id": "qa-030",
+    "tender_id": "tender-003",
+    "question": "What is the tender response deadline for Nordic Logistics & FinServices?",
+    "ground_truth": "November 30, 2026 at 16:00 UTC.",
+    "page_ref": "1"
+  }
+]
