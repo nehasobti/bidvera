@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, Building2, MapPin, Calendar, CheckCircle2, AlertTriangle, Play } from "lucide-react";
 import { startBid } from "@/lib/api";
+import { formatDate } from "@/lib/date";
 
 const SAMPLE_TENDERS = [
   {
@@ -143,7 +144,7 @@ export default function TendersPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                  <span>Deadline: {new Date(tender.deadline).toLocaleDateString()}</span>
+                  <span>Deadline: {formatDate(tender.deadline)}</span>
                 </div>
               </div>
 

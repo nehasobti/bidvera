@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { fetchBid, submitBidDecision } from "@/lib/api";
+import { formatDate } from "@/lib/date";
 import { BidRecord, Requirement, OutlineSection } from "@/types";
 import {
   FileText,
@@ -123,7 +124,7 @@ export default function BidWorkspacePage({ params }: { params: Promise<{ id: str
             </h1>
             <p className="text-xs text-gray-500">
               Buyer: <strong className="text-gray-700">{bid.bid?.buyer || "N/A"}</strong> &bull; Deadline:{" "}
-              {bid.bid?.deadline ? new Date(bid.bid.deadline).toLocaleDateString() : "N/A"}
+              {formatDate(bid.bid?.deadline)}
             </p>
           </div>
 
