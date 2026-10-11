@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Inbox, Layers, Search, Sparkles, Shield, ChevronRight } from "lucide-react";
+import { FileText, Inbox, Layers, Search, Sparkles, Shield, ChevronRight, Bot, MessageSquare } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -50,8 +50,17 @@ export function Navbar() {
             <Inbox className="w-4 h-4 text-amber-600" />
             <span>Approvals Inbox</span>
           </Link>
+
+          <Link
+            href="/bids/bid-50b72897"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg shadow-sm shadow-blue-500/30 transition"
+          >
+            <Bot className="w-4 h-4 text-white" />
+            <span>AI Copilot</span>
+          </Link>
         </nav>
       </div>
     </header>
   );
 }
+
